@@ -15,6 +15,12 @@ def ask_gpt():
     # Get the input data from the request body (expects JSON)
     user_input = request.json.get('input')
 
+    # Error handling
+    # if input missing: return 400 Bad Request Error
+    if not user_input:
+        return jsonify({'error': 'No input provided'}), 400
+
+
     # Simulate a response
     response = {
         'response': f'You asked: {user_input}',
