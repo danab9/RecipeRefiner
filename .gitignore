@@ -1,2 +1,5 @@
 app/__pycache__/*
 flaskr/__pycache__/*
+.env
+app/__pycache__/routes.cpython-312.pyc
+app/__pycache__/routes.cpython-312.pyc

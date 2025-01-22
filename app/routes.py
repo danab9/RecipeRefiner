@@ -1,7 +1,14 @@
 # API routes will go here
-
 from flask import Blueprint, jsonify, request
+from dotenv import load_dotenv
+import os
+import openai
 
+# Load environment variables from .env file
+load_dotenv()
+# Access the API key from environment variables
+openai.api_key = os.getenv("OPENAI_API_KEY")
+ 
 # create a Blueprint for the API routes
 api = Blueprint('api', __name__)
 
@@ -20,12 +27,23 @@ def ask_gpt():
     if not user_input:
         return jsonify({'error': 'No input provided'}), 400
 
+    try:
+        # Generate a response using the Hugging Face GPT-neo model
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo", # Use 'gpt-3.5-turbo or 'gpt-4' based on needs
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": user_input}
+            ],
+            max_tokens=150, # Adjust for length of response
+            temperature=0.7 # Adjust for creativity in the response
+        )
+        # Extract the generated text fro the response 
+        gpt_response = response.choices[0].message.content #.strip()?
 
-    # Simulate a response
-    response = {
-        'response': f'You asked: {user_input}',
-        'status': 'success'
-    }
-
-    # return the response as JSON
-    return jsonify(response)
+        # Return the GPT response as JSON
+        return jsonify({'response': gpt_response, 'status': 'success'})
+    
+    except Exception as e:
+        # if something goes wrong, return a 500 error with the error message
+        return jsonify({'error':str(e)}), 500
