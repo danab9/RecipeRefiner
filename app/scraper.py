@@ -18,3 +18,19 @@ def fetch_html(url):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching URL: {e}")  # Log the error
         return f"Error fetching URL: {e}"  # Return error message as string (instead of None)
+    
+
+def clean_html(html):
+    """
+    Uses BeautifulSoup to remove unnecessary elements from the HTML.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Remove script, style, and ads
+    for tag in soup(["script", "style", "header", "footer", "nav", "aside"]):
+        tag.decompose()
+
+    # Get the most relevant content (recipe is usually in <article> or <main>)
+    main_content = soup.find(["article", "main", "div"], class_=lambda x: x and "recipe" in x.lower())
+
+    return main_content.get_text("\n", strip=True) if main_content else soup.get_text("\n", strip=True)
