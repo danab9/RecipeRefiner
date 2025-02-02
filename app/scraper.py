@@ -24,6 +24,8 @@ def clean_html(html):
     """
     Uses BeautifulSoup to remove unnecessary elements from the HTML.
     """
+    # (Unnecessary elements include <script>, <style>, <header>, <footer>, <nav>, <aside>, etc.)
+    
     soup = BeautifulSoup(html, "html.parser")
 
     # Remove script, style, and ads
