@@ -4,3 +4,4 @@ flaskr/__pycache__/*
 app/__pycache__/routes.cpython-312.pyc
 app/__pycache__/routes.cpython-312.pyc
 .vscode/*
+test/__pycache__/*
