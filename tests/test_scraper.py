@@ -1,4 +1,8 @@
-import pytest
+import sys
+import os
+
+# Add the parent directory (project root) to sys.path so pytest can find `app/`
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from app.scraper import fetch_html, clean_html
 
 def test_fetch_html():
@@ -8,3 +12,4 @@ def test_fetch_html():
 
     assert isinstance(html, str), "fetch_html() should return a string"
     assert "<html" in html.lower(),  "HTML content should contain a <html> tag"
+
