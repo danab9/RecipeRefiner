@@ -43,3 +43,20 @@ def test_clean_html():
     # Ensure non-recipe content is removed
     assert "Navigation Bar" not in cleaned_text, "Should remove the header"
     assert "Site Footer" not in cleaned_text, "Should remove the footer"
+
+def test_clean_html_real_page():
+    """Test clean_html() on a real recipe webpage"""
+    url = "https://www.inspiredtaste.net/25753/carrot-cake-recipe/"
+    raw_html = fetch_html(url)
+
+    cleaned_text = clean_html(raw_html)
+
+    # Ensure some expected words appear in the extracted text
+    assert "carrot" in cleaned_text.lower(), "Extracted text should mention 'carrot'"
+    assert "flour" in cleaned_text.lower(), "Extracted text should mention 'flour'"
+    assert "bake" in cleaned_text.lower(), "Extracted text should mention 'bake'"
+
+    # Ensure navigation, ads, and other unwanted content are removed
+    assert "menu" not in cleaned_text.lower(), "Should remove navigation menu"
+    assert "subscribe" not in cleaned_text.lower(), "Should remove newsletter ads"
+    
