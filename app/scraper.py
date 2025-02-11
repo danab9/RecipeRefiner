@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import json
 
 def fetch_html(url):
     """
@@ -22,17 +23,49 @@ def fetch_html(url):
 
 def clean_html(html):
     """
-    Uses BeautifulSoup to remove unnecessary elements from the HTML.
+    Extracts the page title and visible text content while removing unnecessary elements.
     """
-    # (Unnecessary elements include <script>, <style>, <header>, <footer>, <nav>, <aside>, etc.)
-    
     soup = BeautifulSoup(html, "html.parser")
+    
+    if soup.head:
+        soup.head.extract()
 
-    # Remove script, style, and ads
-    for tag in soup(["script", "style", "header", "footer", "nav", "aside"]):
-        tag.decompose()
+    # ✅ Remove unnecessary elements (ads, scripts, styles, videos, popups)
+    sections_to_remove = [
+        "script", "style", "header", "footer", "nav", "aside", "iframe", "video", "form", 
+        "noscript", "svg", "button", "img", "figure", "input", "picture", "source", "ylplaceholder",
+        "comment", "comments", "related-recipes", "sidebar", "social", "profile-icons",
+        "subscribe", "search", "author", "next_post", "previous_post", "rating", "rating-stars", "meta"
+    ]
+    for tag in soup(sections_to_remove):
+        tag.extract()
 
-    # Get the most relevant content (recipe is usually in <article> or <main>)
-    main_content = soup.find(["article", "main", "div"], class_=lambda x: x and "recipe" in x.lower())
+    # ✅ Remove divs and sections that contain common ad/pop-up identifiers
+    ad_keywords = ["ad", "sponsor", "promo", "banner", "advert", "subscribe", "overlay", "popup", "modal", "cta"]
+    for ad in soup.find_all(class_=lambda x: x and any(keyword in x.lower() for keyword in ad_keywords)):
+        ad.extract()
+    
+    # ✅ Remove all empty divs after removing content
+    for empty_div in soup.find_all("div"):
+        if not empty_div.get_text(strip=True):
+            empty_div.extract()
 
-    return main_content.get_text("\n", strip=True) if main_content else soup.get_text("\n", strip=True)
+    
+
+    # ✅ Extract the title
+    title = soup.find(["h1", "h2"])
+    title_text = title.get_text(strip=True) if title else "Title Not Found"
+
+    # ✅ Save the modified HTML to a file
+    with open("modified_page.html", "w", encoding="utf-8") as f:
+        f.write(str(soup))
+        
+    # ✅ Extract only the visible text (after cleanup)
+    text_content = soup.get_text("\n", strip=True)  # Extracts all text with line breaks
+
+    return f"{title_text}\n\n{text_content}"
+
+html = fetch_html("https://www.inspiredtaste.net/25753/carrot-cake-recipe/")
+cleaned_text = clean_html(html)
+
+print(cleaned_text)
