@@ -18,6 +18,9 @@ RUN apt-get update \
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Upgrade pip and setuptools to latest
+RUN pip install --upgrade pip setuptools
+
 # Copy project
 COPY . /app/
 
