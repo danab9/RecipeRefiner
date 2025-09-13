@@ -1,1 +1,7 @@
-# List of dependencies for the project 
+Django==5.2
+python-decouple>=3.6
+Pillow>=9.0.0
+djangorestframework>=3.14.0
+beautifulsoup4==4.13.5
+requests==2.32.5
+recipe-scrapers==15.9.0

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recipe Result</title>
+</head>
+<body>
+    <h1>Recipe</h1>
+
+    <h2>Title</h2>
+    <p>{{ recipe.title }}</p>
+
+    <h2>Ingredients</h2>
+    <p>{{ recipe.ingredients }}</p>
+
+    <h2>Instructions</h2>
+    <p>{{ recipe.instructions }}</p>
+
+    <a href="{% url 'get_url' %}">Scrape another recipe</a>
+</body>
+</html>
