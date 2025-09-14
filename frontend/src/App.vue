@@ -1,6 +1,19 @@
 <template>
-  <div>hello world</div>
+  <Home />
 </template>
-<script setup lang="ts"></script>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import Home from "./views/Home.vue";
+export default defineComponent({
+  name: "App",
+  components: { Home },
+  data() {
+    return {};
+  },
+  computed: {},
+  methods: {},
+});
+</script>
 
 <style scoped></style>
