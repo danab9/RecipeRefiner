@@ -12,11 +12,15 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Upgrade pip and setuptools to latest
+RUN pip install --upgrade pip setuptools
 
 # Copy project
 COPY . /app/
