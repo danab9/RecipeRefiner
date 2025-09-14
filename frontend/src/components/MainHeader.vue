@@ -24,14 +24,15 @@
       </v-col>
     </v-row>
   </v-container>
+  <DogPicture />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-
+import DogPicture from "@/components/DogPicture.vue";
 export default defineComponent({
   name: "MainHeader",
-  components: {},
+  components: { DogPicture },
   data() {
     return {
       URL: "",
