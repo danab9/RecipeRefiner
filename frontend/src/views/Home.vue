@@ -1,13 +1,18 @@
 <template>
-  <Home />
+  <v-app>
+    <v-main>
+      <MainHeader />
+    </v-main>
+  </v-app>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Home from "./views/Home.vue";
+import MainHeader from "../components/MainHeader.vue";
+
 export default defineComponent({
-  name: "App",
-  components: { Home },
+  name: "Home",
+  components: { MainHeader },
   data() {
     return {};
   },
