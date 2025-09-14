@@ -47,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware', # TODO change before production
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -127,8 +127,16 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",  # React/Vue/Angular dev server
-#     "http://127.0.0.1:3000",
+#     "http://localhost:5173",  # React/Vue/Angular dev server
+#     "http://127.0.0.1:5173",
 # ]
 # For now allow all: TODO change before production
 CORS_ALLOW_ALL_ORIGINS = True
+
+# For development only - allows credentials TODO change before production
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',  # Your frontend dev server
+    'http://127.0.0.1:5173',  # Alternative localhost format
+]

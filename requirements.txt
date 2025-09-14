@@ -4,4 +4,5 @@ Pillow>=9.0.0
 djangorestframework>=3.14.0
 beautifulsoup4==4.13.5
 requests==2.32.5
-recipe-scrapers==15.9.0django-cors-headers==4.8.0
+recipe-scrapers==15.9.0
+django-cors-headers==4.8.0
