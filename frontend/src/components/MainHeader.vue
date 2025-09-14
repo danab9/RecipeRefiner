@@ -7,7 +7,7 @@
     </v-row>
 
     <v-row>
-      <v-col cols="5" offset="4">
+      <v-col>
         <v-form ref="form" @submit.prevent="submitForm" v-model="valid">
           <v-text-field
             clearable

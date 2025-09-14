@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main class="mx-auto" style="max-width: 1200px; min-width: 800px">
       <MainHeader />
     </v-main>
   </v-app>
