@@ -17,7 +17,13 @@
             :rules="rules"
             v-model="URL"
           />
-          <v-btn class="mt-2" type="submit" block :disabled="!valid">
+          <v-btn
+            class="mt-2"
+            type="submit"
+            block
+            :disabled="!valid"
+            @click="submitUrl"
+          >
             Submit
           </v-btn>
         </v-form>
@@ -74,8 +80,13 @@ export default defineComponent({
     },
 
     async testAPI() {
-      console.log(1);
       const response = await axios.get("http://localhost:8000/");
+      console.log("response :>> ", response);
+    },
+    async submitUrl() {
+      const response = await axios.post("http://localhost:8000/", {
+        url: this.URL,
+      });
       console.log("response :>> ", response);
     },
   },
