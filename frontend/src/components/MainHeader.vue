@@ -30,6 +30,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import DogPicture from "@/components/DogPicture.vue";
+import axios from "axios";
 export default defineComponent({
   name: "MainHeader",
   components: { DogPicture },
@@ -46,6 +47,9 @@ export default defineComponent({
     };
   },
   computed: {},
+  mounted() {
+    this.testAPI();
+  },
   methods: {
     isValidURL(string: string): boolean {
       try {
@@ -67,6 +71,12 @@ export default defineComponent({
       } else {
         console.log("Form validation failed");
       }
+    },
+
+    async testAPI() {
+      console.log(1);
+      const response = await axios.get("http://localhost:8000/");
+      console.log("response :>> ", response);
     },
   },
 });
