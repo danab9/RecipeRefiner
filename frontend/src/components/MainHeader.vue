@@ -53,9 +53,7 @@ export default defineComponent({
     };
   },
   computed: {},
-  mounted() {
-    this.testAPI();
-  },
+  mounted() {},
   methods: {
     isValidURL(string: string): boolean {
       try {
@@ -77,11 +75,6 @@ export default defineComponent({
       } else {
         console.log("Form validation failed");
       }
-    },
-
-    async testAPI() {
-      const response = await axios.get("http://localhost:8000/");
-      console.log("response :>> ", response);
     },
     async submitUrl() {
       const response = await axios.post("http://localhost:8000/", {
