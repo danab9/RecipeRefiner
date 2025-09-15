@@ -1,12 +1,11 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
 import json
 
 # from .forms import URLFrom
 
 from .services.recipe_processor import scrape_recipe
 
-def get_url(request):
+def get_url(request: HttpRequest) -> JsonResponse:
     if request.method == "POST":
         try:
             body = json.load(request.body)
