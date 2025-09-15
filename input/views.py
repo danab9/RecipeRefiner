@@ -19,6 +19,4 @@ def get_url(request):
         
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
-    else:  # GET
-        return JsonResponse({}) # TODO
-
+    # TODO: Do i need to take care of GET too? 
