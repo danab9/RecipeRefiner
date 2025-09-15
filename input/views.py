@@ -8,7 +8,7 @@ from .services.recipe_processor import scrape_recipe
 def get_url(request: HttpRequest) -> JsonResponse:
     if request.method == "POST":
         try:
-            body = json.load(request.body)
+            body = json.loads(request.body)
             url = body.get("url")
             if not url:
                 return JsonResponse({"error": "Miising 'url' field"}, status=400)
@@ -18,4 +18,5 @@ def get_url(request: HttpRequest) -> JsonResponse:
         
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
-    # TODO: Do i need to take care of GET too? 
+    else: # GET
+        return JsonResponse({"error": "Only POST allowed"}, status=405)
