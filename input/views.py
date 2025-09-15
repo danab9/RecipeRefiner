@@ -11,10 +11,10 @@ def get_url(request: HttpRequest) -> JsonResponse:
             body = json.loads(request.body)
             url = body.get("url")
             if not url:
-                return JsonResponse({"error": "Miising 'url' field"}, status=400)
+                return JsonResponse({"error": "Missing 'url' field"}, status=400)
 
             data = scrape_recipe(url)
-            return JsonResponse({{"recipe": data}})
+            return JsonResponse({"recipe": data})
         
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
