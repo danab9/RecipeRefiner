@@ -24,7 +24,7 @@ def get_url(request: HttpRequest) -> JsonResponse:
         url_string = body.get("url")
     
         # Check URL validity
-        validate_url = URLValidator(verify_exists=True)
+        validate_url = URLValidator()
         try:
             validate_url(url_string)
         except ValidationError:
