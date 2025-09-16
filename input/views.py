@@ -1,22 +1,39 @@
 from django.http import JsonResponse, HttpRequest
+from django.views.decorators.http import require_POST
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
+
 import json
 
 # from .forms import URLFrom
 
 from .services.recipe_processor import scrape_recipe
 
+@require_POST
 def get_url(request: HttpRequest) -> JsonResponse:
-    if request.method == "POST":
-        try:
-            body = json.loads(request.body)
-            url = body.get("url")
-            if not url:
-                return JsonResponse({"error": "Missing 'url' field"}, status=400)
+    """Handles POST requests to extract a recipe from a given URL.
 
-            data = scrape_recipe(url)
-            return JsonResponse({"recipe": data})
+    Args:
+        request (HttpRequest): The HTTP request containing a JSON body with a 'url' field.
+
+    Returns:
+        JsonResponse: A JSON response with the extracted recipe data.
+    """
+    try:
+        body = json.loads(request.body)
+        url_string = body.get("url")
+    
+        # Check URL validity
+        validate_url = URLValidator(verify_exists=True)
+        try:
+            validate_url(url_string)
+        except ValidationError:
+            return JsonResponse({"error": "Invalid URL input"}, status=400)
+
         
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-    else: # GET
-        return JsonResponse({"error": "Only POST allowed"}, status=405)
+        data = scrape_recipe(url_string)
+        return JsonResponse({"recipe": data})
+    
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
