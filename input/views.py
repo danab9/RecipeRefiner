@@ -1,17 +1,22 @@
-from django.shortcuts import render
+from django.http import JsonResponse, HttpRequest
+import json
 
-from .forms import URLFrom
+# from .forms import URLFrom
 
 from .services.recipe_processor import scrape_recipe
 
-def get_url(request):
+def get_url(request: HttpRequest) -> JsonResponse:
     if request.method == "POST":
-        form = URLFrom(request.POST)
-        if form.is_valid():
-            data = scrape_recipe(form.cleaned_data["url"])
-            return render(request, "recipe_result.html", {"recipe": data})
-    else:
-        form = URLFrom()
-    
-    # default behaviour, if no "POST" response overrides it
-    return render(request, "url.html", {"form": form})
+        try:
+            body = json.loads(request.body)
+            url = body.get("url")
+            if not url:
+                return JsonResponse({"error": "Missing 'url' field"}, status=400)
+
+            data = scrape_recipe(url)
+            return JsonResponse({"recipe": data})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+    else: # GET
+        return JsonResponse({"error": "Only POST allowed"}, status=405)

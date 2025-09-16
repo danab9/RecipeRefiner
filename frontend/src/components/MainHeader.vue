@@ -30,6 +30,7 @@
       </v-col>
     </v-row>
   </v-container>
+  <pre>{{ recipe }}</pre>
   <DogPicture />
 </template>
 
@@ -37,11 +38,19 @@
 import { defineComponent } from "vue";
 import DogPicture from "@/components/DogPicture.vue";
 import axios from "axios";
+
+type Recipe = {
+  ingredients: string;
+  instructions: string;
+  title: string;
+};
+
 export default defineComponent({
   name: "MainHeader",
   components: { DogPicture },
   data() {
     return {
+      recipe: {} as Recipe,
       URL: "",
       valid: false,
       rules: [
@@ -53,9 +62,7 @@ export default defineComponent({
     };
   },
   computed: {},
-  mounted() {
-    this.testAPI();
-  },
+  mounted() {},
   methods: {
     isValidURL(string: string): boolean {
       try {
@@ -78,15 +85,15 @@ export default defineComponent({
         console.log("Form validation failed");
       }
     },
-
-    async testAPI() {
-      const response = await axios.get("http://localhost:8000/");
-      console.log("response :>> ", response);
-    },
     async submitUrl() {
       const response = await axios.post("http://localhost:8000/", {
         url: this.URL,
       });
+
+      if (response.status === 200) {
+        this.recipe = response.data.recipe;
+      }
+
       console.log("response :>> ", response);
     },
   },
