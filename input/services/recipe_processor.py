@@ -14,7 +14,7 @@ def get_title(scraper: AbstractScraper) -> str:
     """
     return scraper.title()
 
-def get_ingredients(scraper: AbstractScraper) -> str:
+def get_ingredients(scraper: AbstractScraper, as_str=False) -> str | list:
     """Extract the ingredients of a recipe as a comma-separated string.
 
     Args:
@@ -23,7 +23,10 @@ def get_ingredients(scraper: AbstractScraper) -> str:
     Returns:
         str: Ingredients joined as a single string.
     """
-    return ', '.join(scraper.ingredients())
+    if as_str:
+        return ', '.join(scraper.ingredients())
+    else:
+        return scraper.ingredients()
 
 
 def get_instructions(scraper: AbstractScraper) -> str:
@@ -37,11 +40,11 @@ def get_instructions(scraper: AbstractScraper) -> str:
     """
     return scraper.instructions()
 
-def scrape_recipe(url: str) -> Dict[str, str]:
+def scrape_recipe(url: str) -> dict:
     """Scrape a recipe from a given URL and return its main components.
 
     Args:
-        url (str): The URL of the recipe page.
+        url (str): The URL of the recipe page. Assuming valid URL
 
     Returns:
         dict[str, str]: A dictionary containing 'title', 'ingredients', and 'instructions'.
@@ -55,14 +58,13 @@ def scrape_recipe(url: str) -> Dict[str, str]:
     try:
         scraper = scrape_me(url)
         recipe_dict["title"] = get_title(scraper)
-        recipe_dict["ingredients"] = get_ingredients(scraper)
+        recipe_dict["ingredients"] = get_ingredients(scraper, as_str=False) # list of ingredients
         recipe_dict["instructions"] = get_instructions(scraper)
     except recipe_scrapers._exceptions.WebsiteNotImplementedError:
         # website not supported 
         # TODO message?
         pass 
-    finally:
-        return recipe_dict
+    return recipe_dict
     
 
 
