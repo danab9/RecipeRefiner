@@ -32,5 +32,5 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Run the development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# # Run the development server - now in docker-compose.yml
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
