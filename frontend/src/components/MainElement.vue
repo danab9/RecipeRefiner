@@ -45,7 +45,7 @@ type Recipe = {
 };
 
 export default defineComponent({
-  name: "MainHeader",
+  name: "MainElement",
   components: { RecipeCard },
   data() {
     return {
