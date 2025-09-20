@@ -105,6 +105,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import axios from "axios";
+import { mapWritableState } from "pinia";
+import { useStore } from "../store/store";
 
 interface FormData {
   username: string;
@@ -145,14 +148,13 @@ export default defineComponent({
       passwordRules: [
         (v: string) => !!v || "Password is required",
         (v: string) =>
-          (v && v.length >= 6) || "Password must be at least 6 characters",
-        (v: string) =>
-          /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(v) ||
-          "Password must contain at least one lowercase letter, one uppercase letter, and one number",
+          (v && v.length >= 3) || "Password must be at least 3 characters",
       ],
     };
   },
   computed: {
+    ...mapWritableState(useStore, ["userName", "userId"]),
+
     confirmPasswordRules() {
       return [
         (v: string) => !!v || "Please confirm your password",
@@ -168,47 +170,33 @@ export default defineComponent({
       this.errorMessage = "";
       this.successMessage = "";
 
-      try {
-        // Simulate API call
-        await this.simulateSignup();
-
-        this.successMessage = "Account created successfully! Please sign in.";
-
-        // Reset form after successful signup
-        setTimeout(() => {
-          this.resetForm();
-          // Optionally redirect to login page
-          this.$router.push("/login");
-        }, 2000);
-      } catch (error) {
-        this.errorMessage =
-          error instanceof Error
-            ? error.message
-            : "An error occurred during signup";
-      } finally {
-        this.loading = false;
-      }
+      await this.startSignup();
+      this.loading = false;
     },
 
-    async simulateSignup(): Promise<void> {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Simulate potential errors
-      if (this.formData.username === "admin") {
-        throw new Error("Username is already taken");
-      }
-
-      if (this.formData.email && this.formData.email === "test@test.com") {
-        throw new Error("Email is already registered");
-      }
-
-      // Here you would normally make an API call to create the user
-      console.log("Creating user:", {
+    async startSignup(): Promise<void> {
+      const payload = {
         username: this.formData.username,
-        email: this.formData.email || null,
-        // Never log actual passwords in production!
-      });
+        password: this.formData.password,
+        email: this.formData.email,
+      };
+
+      try {
+        const response = await axios.post(
+          "http://localhost:8000/register/",
+          payload
+        );
+        if (response.status === 200) {
+          this.userName = response.data.username;
+          this.userId = response.data.user_id;
+
+          setTimeout(() => {
+            this.$router.push("/");
+          }, 500);
+        }
+      } catch (error: any) {
+        this.errorMessage = error.response.data.error;
+      }
     },
 
     resetForm(): void {
