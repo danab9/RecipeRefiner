@@ -1,48 +1,17 @@
 from django.http import JsonResponse, HttpRequest
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
 # auth
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 import json
-
+# local code
 from .services.recipe_processor import scrape_recipe
-
-@require_POST
-def get_url(request: HttpRequest) -> JsonResponse:
-    """Handles POST requests to extract a recipe from a given URL.
-
-    Args:
-        request (HttpRequest): The HTTP request containing a JSON body with a 'url' field.
-
-    Returns:
-        JsonResponse: A JSON response with the extracted recipe data.
-    """
-    try:
-        body = json.loads(request.body)
-        url_string = body.get("url")
-    
-        # Check URL validity
-        validate_url = URLValidator()
-        try:
-            validate_url(url_string)
-        except ValidationError:
-            return JsonResponse({"error": "Invalid URL input"}, status=400)
-
-        # process recipe for everyone
-        data = scrape_recipe(url_string)
-
-        # if user is authenticated save history
-        ## TODO - save history
-        
-        # return processed recipe for all users
-        return JsonResponse({"recipe": data})
-    
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
+from .services.history_service import save_to_history
+from .models import RecipeHistory
 
 @require_POST
 def register_user(request: HttpRequest) -> JsonResponse:
@@ -116,4 +85,100 @@ def login_user(request: HttpRequest) -> JsonResponse:
         "username": user.username
         })
     else:
-        return JsonResponse({"error": "Invalid username or password."}, status=401)
+        return JsonResponse({"error": "Invalid username or password."}, status=401)\
+
+@require_POST
+def logout_user(request: HttpRequest) -> JsonResponse:
+    """Logout user
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        JsonResponse: A JSON response indicating logout status.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "No user logged in"}, status=400)
+    
+    logout(request)
+    return JsonResponse({"message": "Logout successful"})
+    
+@require_POST
+def get_url(request: HttpRequest) -> JsonResponse:
+    """Handles POST requests to extract a recipe from a given URL.
+
+    Args:
+        request (HttpRequest): The HTTP request containing a JSON body with a 'url' field.
+
+    Returns:
+        JsonResponse: A JSON response with the extracted recipe data.
+    """
+    try:
+        body = json.loads(request.body)
+        url_string = body.get("url")
+    
+        # Check URL validity
+        validate_url = URLValidator()
+        try:
+            validate_url(url_string)
+        except ValidationError:
+            return JsonResponse({"error": "Invalid URL input"}, status=400)
+
+        # process recipe for everyone
+        data = scrape_recipe(url_string)
+
+        # if user is authenticated save history
+        if request.user.is_authenticated:
+            save_to_history(request.user, url_string, data)
+        
+        # return processed recipe for all users
+        return JsonResponse({"recipe": data})
+    
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+# @require_GET
+# def get_user_history(request: HttpRequest) -> JsonResponse:
+#     """Handles user's recipes history retrieval.
+
+#     Args:
+#         request (HttpRequest): The HTTP request object containing user information.
+
+#     Returns:
+#         JsonResponse: A JSON response containing a list of the user's recipe history.
+#     """
+#     # login required
+#     if not request.user.is_authenticated:
+#         return JsonResponse({"error": "Authentication required"}, status=401)
+
+#     # Get user's recipes as QuerySet
+#     user_recipes_qs = RecipeHistory.objects.filter(user=request.user).order_by('-date_time') 
+    
+#     # Convert QuerySet to list of dictionaries
+#     recipes_data = []
+#     for recipe in user_recipes_qs:
+#         recipes_data.append({
+#             'id': recipe.id,
+#             'url': recipe.url,
+#             'title': recipe.title,
+#             'ingredients': recipe.ingredients,
+#             'instructions': recipe.instructions,
+#             'date_time': recipe.date_time.isoformat() # Convert datetime to string
+#         })
+    
+#     return JsonResponse({'recipes': recipes_data})
+
+# TODO!!! 
+# @require_http_methods(['DELETE'])
+# def delete_recipe_history(request: HttpRequest) -> JsonResponse:
+#     # get recipe by recipe_id
+#     # check user is authenticated and authorized 
+#     # return error if not
+#     # delete it
+#     # return successful deletion
+
+#     recipe_id = request.get("recipe")
+
+
+
+    
