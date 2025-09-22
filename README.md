@@ -6,8 +6,8 @@ Backend implemented with Django.
 Frontend implemented with Vue.
 
 Features
-	•	Simplified Recipes: Users provide a recipe URL and get a clean, readable version.
-	•	Recipe History: Saves up to the last 20 recipes for registered users.
-	•	Retrieve History: View your recent recipes.
-	•	Delete Recipe: Remove a recipe from history.
+- Simplified Recipes: Users provide a recipe URL and get a clean, readable version.
+- Recipe History: Saves up to the last 20 recipes for registered users.
+- Retrieve History: View your recent recipes.
+- Delete Recipe: Remove a recipe from history.
 
