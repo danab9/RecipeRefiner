@@ -22,7 +22,7 @@ def save_to_history(user: User, url: str, recipe_data: dict) -> None:
         oldest_recipe.delete()
 
     # Create the new recipe
-    new_recipe = RecipeHistory.objects.create(
+    RecipeHistory.objects.create(
         user=user,
         url=url,
         title=recipe_data.get('title',''),
