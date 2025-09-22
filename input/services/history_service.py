@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import datetime
 
 def save_to_history(user: User, url: str, recipe_data: dict) -> None:
-    """Saves a recipe to the user's history, maintaining a maximum of 20 recent recipes.
+    """Saves a recipe to the user's history (bounded history list), maintaining a maximum of 20 recent recipes.
 
         user (User): The user for whom the recipe history is being updated.
         url (str): The URL of the recipe to be saved.
