@@ -98,7 +98,7 @@ def logout_user(request: HttpRequest) -> JsonResponse:
         JsonResponse: A JSON response indicating logout status.
     """
     if not request.user.is_authenticated:
-        return JsonResponse({"message": "No user logged in"}, status=400)
+        return JsonResponse({"error": "No user logged in"}, status=400)
     
     logout(request)
     return JsonResponse({"message": "Logout successful"})

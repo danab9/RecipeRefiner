@@ -192,20 +192,41 @@ class LoginUserTestCase(TestCase):
         self.assertIn("Invalid username or password.", response.json()['error'])
 
     def test_invalid_json(self):
-            """Test that login is rejected if the 
-            request body contains invalid JSON"""
+        """Test that login is rejected if the 
+        request body contains invalid JSON"""
 
-            response = self.client.post("/login/",
-                data="invalid json{",
-                content_type='application/json'
-            )
+        response = self.client.post("/login/",
+            data="invalid json{",
+            content_type='application/json'
+        )
+    
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Invalid JSON", response.json()['error']) 
+
+    def test_logout(self):
+        self.client.login(username=self.test_user,
+                          password=self.test_password)
         
-            self.assertEqual(response.status_code, 400)
-            self.assertIn("Invalid JSON", response.json()['error']) 
+        response = self.client.post("/logout/",
+                                    data=json.dumps({}),
+                                    content_type='application/json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Logout successful", response.json()['message'])
+
+    def test_logout_not_authenticated(self):
+        response = self.client.post("/logout/",
+                                    data=json.dumps({}),
+                                    content_type='application/json')
+        
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("No user logged in", response.json()['error'])
 
 class RecipeHistoryTests(TestCase):
     def setUp(self):
+        self.client = Client()
         self.user = User.objects.create_user(username="testuser", password="pass")
+        self.client.login(username="testuser", password="pass")
 
     def test_save_to_history_creates_recipe(self):
         recipe_data = {'title': "Test", "ingredients": ["egg", "water"], "instructions": "Mix"}
@@ -227,3 +248,5 @@ class RecipeHistoryTests(TestCase):
                 recipe_data={"title": str(i)}
             )
         self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 20)
+
+   
