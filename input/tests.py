@@ -1,6 +1,9 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 import json
+# RecipeHistory tests
+from .models import RecipeHistory
+from .services.history_service import save_to_history
 
 class RegisterUserTestCase(TestCase):
     def setUp(self):
@@ -200,3 +203,27 @@ class LoginUserTestCase(TestCase):
             self.assertEqual(response.status_code, 400)
             self.assertIn("Invalid JSON", response.json()['error']) 
 
+class RecipeHistoryTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser", password="pass")
+
+    def test_save_to_history_creates_recipe(self):
+        recipe_data = {'title': "Test", "ingredients": ["egg", "water"], "instructions": "Mix"}
+        url = "https://www.allrecipes.com/recipe/20680/easy-mexican-casserole/"
+        save_to_history(self.user, url=url, recipe_data=recipe_data)
+
+        # check there is a recipe in the DB
+        self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 1)
+        # check same title
+        recipe = RecipeHistory.objects.get(user=self.user)
+        self.assertEqual(recipe.title, "Test") 
+
+    def test_save_to_history_limits_to_20(self):
+        # Add 21 recipes
+        for i in range(21):
+            save_to_history(
+                self.user, 
+                url=f"http://example.com/{i}", 
+                recipe_data={"title": str(i)}
+            )
+        self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 20)
