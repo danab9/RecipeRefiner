@@ -3,9 +3,11 @@
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6" lg="4">
         <v-card class="elevation-8 pa-6">
-          <v-card-title class="text-center text-h4 mb-6"> Login </v-card-title>
+          <v-card-title class="text-center text-h4 mb-6">
+            Sign Up
+          </v-card-title>
 
-          <v-form ref="form" v-model="valid" @submit.prevent="handleLogin">
+          <v-form ref="form" v-model="valid" @submit.prevent="handleSignup">
             <v-text-field
               v-model="formData.username"
               :rules="usernameRules"
@@ -13,6 +15,16 @@
               prepend-inner-icon="mdi-account"
               variant="outlined"
               required
+              class="mb-3"
+            ></v-text-field>
+
+            <v-text-field
+              v-model="formData.email"
+              :rules="emailRules"
+              label="Email (Optional)"
+              prepend-inner-icon="mdi-email"
+              variant="outlined"
+              type="email"
               class="mb-3"
             ></v-text-field>
 
@@ -29,6 +41,21 @@
               class="mb-3"
             ></v-text-field>
 
+            <v-text-field
+              v-model="formData.confirmPassword"
+              :rules="confirmPasswordRules"
+              label="Confirm Password"
+              prepend-inner-icon="mdi-lock-check"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              :append-inner-icon="
+                showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'
+              "
+              @click:append-inner="showConfirmPassword = !showConfirmPassword"
+              variant="outlined"
+              required
+              class="mb-4"
+            ></v-text-field>
+
             <v-btn
               type="submit"
               :disabled="!valid || loading"
@@ -38,7 +65,7 @@
               block
               class="mb-4"
             >
-              Login
+              Sign Up
             </v-btn>
 
             <div class="text-center">
@@ -46,8 +73,8 @@
               <router-link to="/login" class="text-decoration-none ml-1">
                 <v-btn
                   variant="text"
-                  text="signup"
-                  @click="$emit('changeView', 'signUp')"
+                  text="Login"
+                  @click="$emit('changeView', 'login')"
                 />
               </router-link>
             </div>
@@ -83,7 +110,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { mapWritableState, mapActions } from "pinia";
-import { useStore, type LoginPayload } from "../store/store";
+import { useStore, type RegisterPayload } from "../store/store";
 
 export default defineComponent({
   name: "SignupView",
@@ -100,8 +127,10 @@ export default defineComponent({
       successMessage: "",
       formData: {
         username: "",
+        email: "",
         password: "",
-      } as LoginPayload,
+        confirmPassword: "",
+      } as RegisterPayload,
       usernameRules: [
         (v: string) => !!v || "Username is required",
         (v: string) =>
@@ -124,7 +153,6 @@ export default defineComponent({
   },
   computed: {
     ...mapWritableState(useStore, ["userName", "userId"]),
-
     confirmPasswordRules() {
       return [
         (v: string) => !!v || "Please confirm your password",
@@ -133,8 +161,8 @@ export default defineComponent({
     },
   },
   methods: {
-    ...mapActions(useStore, ["loginFunc"]),
-    async handleLogin(): Promise<void> {
+    ...mapActions(useStore, ["registerFunc"]),
+    async handleSignup(): Promise<void> {
       if (!this.valid) return;
 
       this.loading = true;
@@ -149,10 +177,12 @@ export default defineComponent({
       const payload = {
         username: this.formData.username,
         password: this.formData.password,
+        confirmPassword: this.formData.confirmPassword,
+        email: this.formData.email,
       };
 
       try {
-        const response = await this.loginFunc(payload);
+        const response = await this.registerFunc(payload);
         if (response.status === 200) {
           this.userName = response.data.username;
           this.userId = response.data.user_id;
@@ -168,7 +198,9 @@ export default defineComponent({
     resetForm(): void {
       this.formData = {
         username: "",
+        email: "",
         password: "",
+        confirmPassword: "",
       };
       this.valid = false;
       this.showPassword = false;
