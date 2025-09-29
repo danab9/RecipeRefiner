@@ -1,13 +1,17 @@
 <template>
-  <Home />
+  <main>
+    <MainNav />
+    <RouterView />
+  </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Home from "./views/Home.vue";
+import MainNav from "../src/components/MainNav.vue";
+
 export default defineComponent({
   name: "App",
-  components: { Home },
+  components: { MainNav },
   data() {
     return {};
   },
