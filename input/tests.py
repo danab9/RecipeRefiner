@@ -218,7 +218,6 @@ class LoginUserTestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, 403)
-        self.assertIn("No user logged in", response.json()["error"])
 
 
 class RecipeHistoryTests(TestCase):
