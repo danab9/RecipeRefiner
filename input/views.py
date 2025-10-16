@@ -15,131 +15,145 @@ import json
 from .services.recipe_processor import scrape_recipe
 from .services.history_service import save_to_history
 from .models import RecipeHistory
+from .serializers import RecipeHistorySerializer
+
+# rest framework
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 
-@csrf_exempt
-@require_POST
-def register_user(request: HttpRequest) -> JsonResponse:
+@api_view(["POST"])
+def register_user(request):
     """Register a new user.
 
     Expects JSON: {"username": str, "password": str, "email": str (optional)}
 
-    Returns JsonResponse indicating success or failure of authentication.
+    Returns Response indicating success or failure of authentication.
     """
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    username = body.get("username")
-    password = body.get("password")
-    email = body.get("email")  # optional
+    username = request.data.get("username")
+    password = request.data.get("password")
+    email = request.data.get("email")  # optional field
 
     # validate username was given
     if not username:
-        return JsonResponse({"error": "Username required"}, status=400)
+        return Response(
+            {"error": "Username required"}, status=status.HTTP_400_BAD_REQUEST
+        )
     if not password:
-        return JsonResponse({"error": "Password required"}, status=400)
+        return Response(
+            {"error": "Password required"}, status=status.HTTP_400_BAD_REQUEST
+        )
     # Check if username already exists
     if User.objects.filter(username=username).exists():
-        return JsonResponse({"error": "Username already exists"}, status=400)
+        return Response(
+            {"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST
+        )
     # Check if email already exists
     if email and User.objects.filter(email=email).exists():
-        return JsonResponse({"error": "Email already exists"}, status=400)
+        return Response(
+            {"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST
+        )
     try:
         new_user = User.objects.create_user(username, email, password)
         login(request, new_user)  # automatic login in registration
-        return JsonResponse(
+        return Response(
             {
                 "message": "Registration successful",
                 "user_id": new_user.id,
                 "username": new_user.username,
-            }
+            },
+            status=status.HTTP_201_CREATED,
         )
     except Exception as e:
-        return JsonResponse({"error": "Registration failed"}, status=500)
+        return Response(
+            {"error": "Registration failed"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
-@csrf_exempt
-@require_POST
-def login_user(request: HttpRequest) -> JsonResponse:
+@api_view(["POST"])
+def login_user(request):
     """Handle user login.
 
     Expects JSON: {"username": str, "password": str}
 
     Returns:
-        JsonResponse: A JSON response indicating success or failure of authentication.
+        Response: A DRF Response indicating success or failure of authentication.
     """
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
     # get user credentials
-    username = body.get("username")
-    password = body.get("password")
+    username = request.data.get("username")
+    password = request.data.get("password")
 
     # validate credentials were provided
     if not username:
-        return JsonResponse({"error": "Username required"}, status=400)
+        return Response(
+            {"error": "Username required"}, status=status.HTTP_400_BAD_REQUEST
+        )
     if not password:
-        return JsonResponse({"error": "Password required"}, status=400)
+        return Response(
+            {"error": "Password required"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     user = authenticate(username=username, password=password)
     if user is not None:
         # user is authenticated
         login(request, user)
-        return JsonResponse(
+        return Response(
             {
                 "message": "Authentication successful",
                 "user_id": user.id,
                 "username": user.username,
-            }
+            },
+            status=status.HTTP_200_OK,
         )
     else:
-        return JsonResponse({"error": "Invalid username or password."}, status=401)
+        return Response(
+            {"error": "Invalid username or password."},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
 
 
-@csrf_exempt
-@require_POST
-def logout_user(request: HttpRequest) -> JsonResponse:
+@api_view(["POST"])
+def logout_user(request):
     """Logout user
 
     Args:
-        request (HttpRequest): The HTTP request object.
+        request: The HTTP request object.
 
     Returns:
-        JsonResponse: A JSON response indicating logout status.
+        Response: A DRF Response indicating logout status.
     """
     if not request.user.is_authenticated:
-        return JsonResponse({"error": "No user logged in"}, status=400)
-
+        return Response(
+            {"error": "No user logged in"}, status=status.HTTP_400_BAD_REQUEST
+        )
     logout(request)
-    return JsonResponse({"message": "Logout successful"})
+    return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
 
 
-@csrf_exempt
-@require_POST
-def get_url(request: HttpRequest) -> JsonResponse:
+@api_view(["POST"])
+def get_url(request):
     """Handles POST requests to extract a recipe from a given URL.
 
     Args:
         request (HttpRequest): The HTTP request containing a JSON body with a 'url' field.
 
     Returns:
-        JsonResponse: A JSON response with the extracted recipe data.
+        Response: A DRF Response with the extracted recipe data.
     """
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    url_string = body.get("url")
+    url_string = request.data.get("url")
     # Check URL validity
     validate_url = URLValidator()
     try:
         validate_url(url_string)
     except ValidationError:
-        return JsonResponse({"error": "Invalid URL input"}, status=400)
+        return Response(
+            {"error": "Invalid URL input"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     # process recipe for everyone
     data = scrape_recipe(url_string)
@@ -149,75 +163,39 @@ def get_url(request: HttpRequest) -> JsonResponse:
         save_to_history(request.user, url_string, data)
 
     # return processed recipe for all users
-    return JsonResponse({"recipe": data})
+    return Response({"recipe": data}, status=status.HTTP_200_OK)
 
 
-@require_GET
-def get_user_history(request: HttpRequest) -> JsonResponse:
-    """Handles user's recipes history retrieval.
-
-    Args:
-        request (HttpRequest): The HTTP request object containing user information.
-
-    Returns:
-        JsonResponse: A JSON response containing a list of the user's recipe history.
-    """
-    # login required
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_user_history(request):
+    """Retrieve user's recipe history."""
+    # login required - taken care of by permission classes decorator
 
     # Get user's recipes as QuerySet
     user_recipes_qs = RecipeHistory.objects.filter(user=request.user).order_by(
         "-date_time"
     )
-
-    # Convert QuerySet to list of dictionaries
-    recipes_data = []
-    for recipe in user_recipes_qs:
-        recipes_data.append(
-            {
-                "id": recipe.id,
-                "url": recipe.url,
-                "title": recipe.title,
-                "ingredients": recipe.ingredients,
-                "instructions": recipe.instructions,
-                "date_time": recipe.date_time.isoformat(),  # Convert datetime to string
-            }
-        )
-
-    return JsonResponse({"recipes": recipes_data})
+    serializer = RecipeHistorySerializer(user_recipes_qs, many=True)
+    return Response({"recipes": serializer.data}, status=status.HTTP_200_OK)
 
 
-@csrf_exempt
-@require_http_methods(["DELETE"])
-def delete_recipe(request: HttpRequest) -> JsonResponse:
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_recipe(request, recipe_id):
     """Handles the deletion of a recipe from user's history
     based on the provided recipe ID in the request.
     User must be authenticated.
-    Args:
-        request (HttpRequest): The HTTP request object containing 'recipe_id',
-                               the id of the recipe to delete.
-    Returns:
-        JsonResponse: A JSON response indicating the result of the deletion operation.
+
+    recipe_id: recipe_id to delete from the url
     """
-    try:
-        body = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-    recipe_id = body.get("recipe_id")
-    if recipe_id is None:  # can be 0! = > can't user `if not recipe_id`!
-        return JsonResponse({"error": "recipe_id required"}, status=400)
-
-    # make sure user is authenticated
-    if not request.user.is_authenticated:
-        return JsonResponse({"error": "Authentication required"}, status=401)
-
     try:
         # delete instance - allows later expansion, for custom deletion.
         recipe = RecipeHistory.objects.get(id=recipe_id, user=request.user)
         recipe.delete()
     except ObjectDoesNotExist:
-        return JsonResponse({"error": "Recipe not found"}, status=404)
+        return Response({"error": "Recipe not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    return JsonResponse({"message": "Deletion successful"}, status=200)
+    return Response(
+        {"message": "Deletion successful"}, status=status.HTTP_204_NO_CONTENT
+    )

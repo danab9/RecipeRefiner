@@ -10,3 +10,5 @@ db.sqlite3
 *.njsproj
 *.sln
 *.sw?
+api_key.txt
+test_parser.py
