@@ -28,7 +28,7 @@ from rest_framework.permissions import IsAuthenticated
 def register_user(request):
     """Register a new user.
 
-    Expects JSON: {"username": str, "password": str, "email": str (optional)}
+    Expects "username": str, "password": str, "email": str (optional)
 
     Returns Response indicating success or failure of authentication.
     """
@@ -117,6 +117,7 @@ def login_user(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def logout_user(request):
     """Logout user
 
@@ -126,10 +127,6 @@ def logout_user(request):
     Returns:
         Response: A DRF Response indicating logout status.
     """
-    if not request.user.is_authenticated:
-        return Response(
-            {"error": "No user logged in"}, status=status.HTTP_400_BAD_REQUEST
-        )
     logout(request)
     return Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
 
