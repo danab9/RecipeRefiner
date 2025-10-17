@@ -26,7 +26,7 @@ export default defineComponent({
   computed: {
     ...mapWritableState(useStore, ["userName"]),
     displayName() {
-      return this.userName === "" ? "Gest" : this.userName;
+      return this.userName === "" ? "Guest" : this.userName;
     },
   },
   methods: {
