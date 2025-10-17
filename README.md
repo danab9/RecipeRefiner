@@ -9,8 +9,13 @@ Features
 - Simplified Recipes: Users provide a recipe URL and get a clean, readable version.
 - Recipe History: Saves up to the last 20 recipes for registered users.
 
+<p align="center">
+<img src="usage_gif.gif" width="800"/>
+</p>
+
 -----
 ## Acknowledgments / Credits
 
 Core functionality in this app uses the [**recipe-scrapers**](https://github.com/hhursev/recipe-scrapers) Python library to parse recipe pages (ingredients, instructions, etc.).  
 Thank you to the maintainers of **recipe-scrapers** for enabling robust recipe extraction in my project.  
+
