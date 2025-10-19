@@ -4,7 +4,6 @@
       <v-col cols="12" sm="8" md="6" lg="4">
         <v-card class="elevation-8 pa-6">
           <v-card-title class="text-center text-h4 mb-6"> Login </v-card-title>
-
           <v-form ref="form" v-model="valid" @submit.prevent="handleLogin">
             <v-text-field
               v-model="formData.username"
@@ -14,8 +13,7 @@
               variant="outlined"
               required
               class="mb-3"
-            ></v-text-field>
-
+            />
             <v-text-field
               v-model="formData.password"
               :rules="passwordRules"
@@ -27,8 +25,7 @@
               variant="outlined"
               required
               class="mb-3"
-            ></v-text-field>
-
+            />
             <v-btn
               type="submit"
               :disabled="!valid || loading"
