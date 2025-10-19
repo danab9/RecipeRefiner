@@ -163,7 +163,7 @@ export default defineComponent({
   data() {
     return {
       checkedIngredients: {} as Record<number, boolean>,
-      showContent: true, // Default to showing content
+      showContent: false, // Default to showing content
     };
   },
   computed: {},
