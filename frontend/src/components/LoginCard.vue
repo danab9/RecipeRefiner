@@ -133,11 +133,9 @@ export default defineComponent({
     ...mapActions(useStore, ["loginFunc"]),
     async handleLogin(): Promise<void> {
       if (!this.valid) return;
-
       this.loading = true;
       this.errorMessage = "";
       this.successMessage = "";
-
       await this.startSignup();
       this.loading = false;
     },

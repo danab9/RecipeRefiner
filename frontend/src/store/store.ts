@@ -23,7 +23,11 @@ type StoreType = {
 
 export const useStore = defineStore("store", {
   state: (): StoreType => ({ userId: null, userName: "", csrfToken: null }),
-  getters: {},
+  getters: {
+    isUserLoggedIn(state) {
+      return state.userId && state.userName;
+    },
+  },
   actions: {
     async loginFunc(payload: LoginPayload) {
       const response = await axios.post(
@@ -134,6 +138,28 @@ export const useStore = defineStore("store", {
       }
 
       return response;
+    },
+
+    async getRecipe(url: string) {
+      const response = await axios.post("http://localhost:8000/", {
+        url: url,
+      });
+
+      return response;
+    },
+
+    async getUserHistory() {
+      // Use GET request to match the API view's @api_view(["GET"]) decorator
+      const response = await axios.get("http://localhost:8000/history/", {
+        withCredentials: true, // Ensure cookies/session are sent
+        headers: {
+          "X-CSRFToken": this.csrfToken || "", // Include CSRF token if available
+        },
+      });
+      if (response.status === 200) {
+        return response.data.recipes;
+      }
+      console.log("response :>> ", response);
     },
   },
 });
