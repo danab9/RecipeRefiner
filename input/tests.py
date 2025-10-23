@@ -225,19 +225,65 @@ class RecipeHistoryTests(TestCase):
         self.user = User.objects.create_user(username="testuser", password="pass")
 
     def test_save_to_history_creates_recipe(self):
+        url = "https://www.allrecipes.com/recipe/20680/easy-mexican-casserole/"
         recipe_data = {
             "title": "Test",
             "ingredients": ["egg", "water"],
             "instructions": "Mix",
         }
-        url = "https://www.allrecipes.com/recipe/20680/easy-mexican-casserole/"
-        save_to_history(self.user, url=url, recipe_data=recipe_data)
 
-        # check there is a recipe in the DB
+        _, created = save_to_history(self.user, url=url, recipe_data=recipe_data)
+
+        # Check it was created
+        self.assertTrue(created)
+
+        # Check the recipe exists in the database
         self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 1)
-        # check same title
-        recipe = RecipeHistory.objects.get(user=self.user)
-        self.assertEqual(recipe.title, "Test")
+
+        # Check the saved title
+        saved_recipe = RecipeHistory.objects.get(user=self.user)
+        self.assertEqual(saved_recipe.title, recipe_data["title"])
+
+    def test_save_to_history_not_unique(self):
+        url = "https://www.allrecipes.com/recipe/20680/easy-mexican-casserole/"
+
+        recipe_data_1 = {
+            "title": "Test",
+            "ingredients": ["egg", "water"],
+            "instructions": "Mix",
+        }
+        recipe_data_2 = {
+            "title": "Test 1",
+            "ingredients": ["egg", "water", "sugar"],
+            "instructions": "Mix well",
+        }
+
+        # First save
+        recipe, created = save_to_history(self.user, url=url, recipe_data=recipe_data_1)
+        self.assertTrue(created)
+
+        # Check database state
+        self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 1)
+        saved_recipe = RecipeHistory.objects.get(user=self.user)
+        self.assertEqual(saved_recipe.title, recipe_data_1["title"])
+
+        # Save again with same URL but new data
+        recipe_updated, created_updated = save_to_history(
+            self.user, url=url, recipe_data=recipe_data_2
+        )
+        self.assertFalse(created_updated)
+
+        # Database should still have one record
+        self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 1)
+
+        # Check that the recipe data was updated
+        updated_recipe = RecipeHistory.objects.get(user=self.user)
+        self.assertEqual(updated_recipe.title, recipe_data_2["title"])
+        self.assertEqual(updated_recipe.ingredients, recipe_data_2["ingredients"])
+        self.assertEqual(updated_recipe.instructions, recipe_data_2["instructions"])
+
+        # Check that the timestamp was updated
+        self.assertTrue(saved_recipe.date_time < updated_recipe.date_time)
 
     def test_save_to_history_limits_to_20(self):
         # Add 21 recipes
