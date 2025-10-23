@@ -12,3 +12,4 @@ db.sqlite3
 *.sw?
 api_key.txt
 test_parser.py
+.env
