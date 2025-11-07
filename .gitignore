@@ -13,3 +13,4 @@ db.sqlite3
 api_key.txt
 test_parser.py
 .env
+input/__pycache__/tests.cpython-313.pyc
