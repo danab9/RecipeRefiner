@@ -19,10 +19,23 @@ type StoreType = {
   userId: null | number;
   userName: string;
   csrfToken: string | null;
+  oldRecipes: Recipe[];
+};
+
+export type Recipe = {
+  ingredients: string[];
+  instructions: string;
+  title: string;
+  id: number;
 };
 
 export const useStore = defineStore("store", {
-  state: (): StoreType => ({ userId: null, userName: "", csrfToken: null }),
+  state: (): StoreType => ({
+    userId: null,
+    userName: "",
+    csrfToken: null,
+    oldRecipes: [],
+  }),
   getters: {
     isUserLoggedIn(state) {
       return state.userId && state.userName;
@@ -157,9 +170,23 @@ export const useStore = defineStore("store", {
         },
       });
       if (response.status === 200) {
-        return response.data.recipes;
+        this.oldRecipes = response.data.recipes;
       }
-      console.log("response :>> ", response);
+    },
+
+    async deleteRecipe(recipeId: number) {
+      const response = await axios.delete(
+        `http://localhost:8000/delete/${recipeId}`,
+        {
+          withCredentials: true, // Ensure cookies/session are sent
+          headers: {
+            "X-CSRFToken": this.csrfToken || "", // Include CSRF token if available
+          },
+        }
+      );
+      if (response.status === 204) {
+        await this.getUserHistory();
+      }
     },
   },
 });
