@@ -42,6 +42,7 @@ export default defineComponent({
   methods: {
     ...mapActions(useStore, ["signOutFunc"]),
     logoutFunc() {
+      this.$router.push("/");
       this.signOutFunc();
     },
   },

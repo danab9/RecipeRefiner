@@ -136,6 +136,7 @@
               Share
             </v-btn> -->
             <v-btn
+              v-if="isUserInHistoryPage"
               color="red"
               variant="tonal"
               prepend-icon="mdi-trash-can-outline"
