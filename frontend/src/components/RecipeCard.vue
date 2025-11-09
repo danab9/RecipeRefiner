@@ -11,6 +11,7 @@
             </h1>
           </div>
           <v-btn
+            v-if="isUserInHistoryPage"
             icon
             variant="text"
             @click="toggleCardContent"
@@ -163,10 +164,19 @@ export default defineComponent({
   data() {
     return {
       checkedIngredients: {} as Record<number, boolean>,
-      showContent: false, // Default to showing content
+      showContent: true, // Default to showing content
     };
   },
-  computed: {},
+  computed: {
+    isUserInHistoryPage() {
+      return this.$route.path === "/history";
+    },
+  },
+  mounted() {
+    if (this.isUserInHistoryPage) {
+      this.showContent = false;
+    }
+  },
   methods: {
     toggleIngredient(index: number) {
       this.checkedIngredients = {

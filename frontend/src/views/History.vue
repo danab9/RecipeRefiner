@@ -18,7 +18,6 @@ export default defineComponent({
   computed: {},
   async mounted() {
     this.oldRecipes = await this.getUserHistory();
-    console.log("this.oldRecipes :>> ", this.oldRecipes);
   },
   methods: {
     ...mapActions(useStore, ["getUserHistory"]),
