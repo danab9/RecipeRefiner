@@ -6,4 +6,4 @@ from .models import RecipeHistory
 class RecipeHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeHistory
-        fields = ["user", "url", "title", "ingredients", "instructions", "date_time"]
+        fields = "__all__"
