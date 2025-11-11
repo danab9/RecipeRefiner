@@ -3,129 +3,161 @@
     <v-card class="recipe-card" elevation="4" rounded="lg">
       <!-- Header Section -->
       <v-card-title class="recipe-header pa-6 pb-4">
-        <div class="d-flex align-center">
-          <v-icon color="primary" size="28" class="me-3">mdi-chef-hat</v-icon>
-          <h1 class="text-h4 font-weight-bold text-primary">
-            {{ recipe.title }}
-          </h1>
+        <div class="d-flex align-center justify-space-between w-100">
+          <div class="d-flex align-center">
+            <v-icon color="primary" size="28" class="me-3">mdi-chef-hat</v-icon>
+            <h1 class="text-h4 font-weight-bold text-primary">
+              {{ recipe.title }}
+            </h1>
+          </div>
+          <v-btn
+            v-if="isUserInHistoryPage"
+            icon
+            variant="text"
+            @click="toggleCardContent"
+            :aria-label="
+              showContent ? 'Hide recipe details' : 'Show recipe details'
+            "
+            class="toggle-btn"
+            color="primary"
+          >
+            <v-icon size="24" :class="{ 'rotate-icon': showContent }">
+              mdi-chevron-down
+            </v-icon>
+          </v-btn>
         </div>
       </v-card-title>
 
-      <v-divider></v-divider>
+      <v-divider v-if="showContent"></v-divider>
 
       <!-- Content Section -->
-      <v-card-text class="pa-0">
-        <v-row no-gutters>
-          <!-- Ingredients Section -->
-          <v-col cols="12" md="5" class="ingredients-section">
-            <div class="pa-6">
-              <div class="d-flex align-center mb-4">
-                <v-icon color="success" size="24" class="me-2"
-                  >mdi-format-list-bulleted</v-icon
-                >
-                <h2 class="text-h5 font-weight-medium text-success">
-                  Ingredients
-                </h2>
-              </div>
-
-              <v-list class="ingredient-list" density="comfortable">
-                <v-list-item
-                  v-for="(ingredient, index) in recipe.ingredients"
-                  :key="index"
-                  class="ingredient-item px-0"
-                  @click="toggleIngredient(index)"
-                  :class="{ 'ingredient-checked': checkedIngredients[index] }"
-                  style="cursor: pointer"
-                >
-                  <template #prepend>
-                    <v-icon
-                      :color="
-                        checkedIngredients[index] ? 'success' : 'grey-lighten-1'
-                      "
-                      size="20"
-                      class="me-3"
+      <v-expand-transition>
+        <div v-if="showContent">
+          <v-card-text class="pa-0">
+            <v-row no-gutters>
+              <!-- Ingredients Section -->
+              <v-col cols="12" md="5" class="ingredients-section">
+                <div class="pa-6">
+                  <div class="d-flex align-center mb-4">
+                    <v-icon color="success" size="24" class="me-2"
+                      >mdi-format-list-bulleted</v-icon
                     >
-                      {{
-                        checkedIngredients[index]
-                          ? "mdi-check-circle"
-                          : "mdi-circle-outline"
-                      }}
-                    </v-icon>
-                  </template>
-                  <v-list-item-title
-                    class="text-body-1"
-                    :class="{
-                      'text-decoration-line-through text-medium-emphasis':
-                        checkedIngredients[index],
-                    }"
-                  >
-                    {{ ingredient }}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </div>
-          </v-col>
+                    <h2 class="text-h5 font-weight-medium text-success">
+                      Ingredients
+                    </h2>
+                  </div>
 
-          <!-- Divider for larger screens -->
-          <v-divider vertical class="d-none d-md-block"></v-divider>
-          <v-divider class="d-block d-md-none"></v-divider>
+                  <v-list class="ingredient-list" density="comfortable">
+                    <v-list-item
+                      v-for="(ingredient, index) in recipe.ingredients"
+                      :key="index"
+                      class="ingredient-item px-0"
+                      @click="toggleIngredient(index)"
+                      :class="{
+                        'ingredient-checked': checkedIngredients[index],
+                      }"
+                      style="cursor: pointer"
+                    >
+                      <template #prepend>
+                        <v-icon
+                          :color="
+                            checkedIngredients[index]
+                              ? 'success'
+                              : 'grey-lighten-1'
+                          "
+                          size="20"
+                          class="me-3"
+                        >
+                          {{
+                            checkedIngredients[index]
+                              ? "mdi-check-circle"
+                              : "mdi-circle-outline"
+                          }}
+                        </v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-body-1"
+                        :class="{
+                          'text-decoration-line-through text-medium-emphasis':
+                            checkedIngredients[index],
+                        }"
+                      >
+                        {{ ingredient }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </div>
+              </v-col>
 
-          <!-- Instructions Section -->
-          <v-col cols="12" md="7" class="instructions-section">
-            <div class="pa-6">
-              <div class="d-flex align-center mb-4">
-                <v-icon color="warning" size="24" class="me-2"
-                  >mdi-file-document-outline</v-icon
-                >
-                <h2 class="text-h5 font-weight-medium text-warning">
-                  Instructions
-                </h2>
-              </div>
+              <!-- Divider for larger screens -->
+              <v-divider vertical class="d-none d-md-block"></v-divider>
+              <v-divider class="d-block d-md-none"></v-divider>
 
-              <div class="instructions-content">
-                <p class="text-body-1 line-height-relaxed">
-                  {{ recipe.instructions }}
-                </p>
-              </div>
-            </div>
-          </v-col>
-        </v-row>
-      </v-card-text>
+              <!-- Instructions Section -->
+              <v-col cols="12" md="7" class="instructions-section">
+                <div class="pa-6">
+                  <div class="d-flex align-center mb-4">
+                    <v-icon color="warning" size="24" class="me-2"
+                      >mdi-file-document-outline</v-icon
+                    >
+                    <h2 class="text-h5 font-weight-medium text-warning">
+                      Instructions
+                    </h2>
+                  </div>
 
-      <!-- Footer Section -->
-      <v-divider></v-divider>
-      <v-card-actions class="pa-4 justify-center">
-        <v-btn
-          color="primary"
-          variant="tonal"
-          prepend-icon="mdi-heart-outline"
-          size="large"
-          class="me-2"
-        >
-          Save Recipe
-        </v-btn>
-        <v-btn
-          color="secondary"
-          variant="outlined"
-          prepend-icon="mdi-share-variant"
-          size="large"
-        >
-          Share
-        </v-btn>
-      </v-card-actions>
+                  <div class="instructions-content">
+                    <p class="text-body-1 line-height-relaxed">
+                      {{ recipe.instructions }}
+                    </p>
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+
+          <!-- Footer Section -->
+          <v-divider></v-divider>
+          <v-card-actions class="pa-4 justify-center">
+            <!-- <v-btn
+              color="primary"
+              variant="tonal"
+              prepend-icon="mdi-heart-outline"
+              size="large"
+              class="me-2"
+            >
+              Save Recipe
+            </v-btn> -->
+            <!-- <v-btn
+              color="secondary"
+              variant="outlined"
+              prepend-icon="mdi-share-variant"
+              size="large"
+            > 
+              Share
+            </v-btn> -->
+            <v-btn
+              v-if="isUserInHistoryPage"
+              color="red"
+              variant="tonal"
+              prepend-icon="mdi-trash-can-outline"
+              size="large"
+              class="me-2"
+              @click="deleteRecipe(recipe.id)"
+            >
+              Delete Recipe
+            </v-btn>
+          </v-card-actions>
+        </div>
+      </v-expand-transition>
     </v-card>
   </div>
 </template>
 
 <script lang="ts">
+import { useStore, type Recipe } from "@/store/store";
+import { mapActions } from "pinia";
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
-
-type Recipe = {
-  ingredients: string[];
-  instructions: string;
-  title: string;
-};
 
 export default defineComponent({
   name: "RecipeCard",
@@ -139,15 +171,29 @@ export default defineComponent({
   data() {
     return {
       checkedIngredients: {} as Record<number, boolean>,
+      showContent: true, // Default to showing content
     };
   },
-  computed: {},
+  computed: {
+    isUserInHistoryPage() {
+      return this.$route.path === "/history";
+    },
+  },
+  mounted() {
+    if (this.isUserInHistoryPage) {
+      this.showContent = false;
+    }
+  },
   methods: {
+    ...mapActions(useStore, ["deleteRecipe"]),
     toggleIngredient(index: number) {
       this.checkedIngredients = {
         ...this.checkedIngredients,
         [index]: !this.checkedIngredients[index],
       };
+    },
+    toggleCardContent() {
+      this.showContent = !this.showContent;
     },
   },
 });
@@ -200,6 +246,14 @@ export default defineComponent({
 
 .line-height-relaxed {
   line-height: 1.7;
+}
+
+.toggle-btn {
+  transition: transform 0.3s ease;
+}
+
+.rotate-icon {
+  transform: rotate(180deg);
 }
 
 /* Responsive adjustments */

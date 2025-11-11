@@ -6,33 +6,7 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  // withCredentials: true, // This ensures cookies are sent with requests
 });
-
-// // Request interceptor
-// apiClient.interceptors.request.use(
-//   (config) => {
-//     // Add auth token if available
-//     const token = localStorage.getItem("token");
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
-// // Response interceptor
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     // Handle common errors
-//     if (error.response?.status === 401) {
-//       // Redirect to login
-//       localStorage.removeItem("token");
-//       window.location.href = "/login";
-//     }
-//     return Promise.reject(error);
-//   }
-// );
 
 export default apiClient;

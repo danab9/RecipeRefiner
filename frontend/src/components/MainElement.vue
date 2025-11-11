@@ -35,14 +35,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import axios from "axios";
 import RecipeCard from "./RecipeCard.vue";
-
-type Recipe = {
-  ingredients: string[];
-  instructions: string;
-  title: string;
-};
+import { mapActions } from "pinia";
+import { useStore, type Recipe } from "@/store/store";
 
 export default defineComponent({
   name: "MainElement",
@@ -66,17 +61,13 @@ export default defineComponent({
   },
   mounted() {},
   methods: {
+    ...mapActions(useStore, ["getRecipe"]),
     async submitUrl() {
-      const response = await axios.post("http://localhost:8000/", {
-        url: this.URL,
-      });
-
+      const response = await this.getRecipe(this.URL);
       if (response.status === 200) {
         this.recipe = response.data.recipe;
         this.URL = "";
       }
-
-      console.log("response :>> ", response);
     },
   },
 });
