@@ -35,16 +35,9 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import axios from "axios";
 import RecipeCard from "./RecipeCard.vue";
 import { mapActions } from "pinia";
-import { useStore } from "@/store/store";
-
-type Recipe = {
-  ingredients: string[];
-  instructions: string;
-  title: string;
-};
+import { useStore, type Recipe } from "@/store/store";
 
 export default defineComponent({
   name: "MainElement",

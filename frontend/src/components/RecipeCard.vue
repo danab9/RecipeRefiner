@@ -11,6 +11,7 @@
             </h1>
           </div>
           <v-btn
+            v-if="isUserInHistoryPage"
             icon
             variant="text"
             @click="toggleCardContent"
@@ -117,7 +118,7 @@
           <!-- Footer Section -->
           <v-divider></v-divider>
           <v-card-actions class="pa-4 justify-center">
-            <v-btn
+            <!-- <v-btn
               color="primary"
               variant="tonal"
               prepend-icon="mdi-heart-outline"
@@ -125,14 +126,25 @@
               class="me-2"
             >
               Save Recipe
-            </v-btn>
-            <v-btn
+            </v-btn> -->
+            <!-- <v-btn
               color="secondary"
               variant="outlined"
               prepend-icon="mdi-share-variant"
               size="large"
-            >
+            > 
               Share
+            </v-btn> -->
+            <v-btn
+              v-if="isUserInHistoryPage"
+              color="red"
+              variant="tonal"
+              prepend-icon="mdi-trash-can-outline"
+              size="large"
+              class="me-2"
+              @click="deleteRecipe(recipe.id)"
+            >
+              Delete Recipe
             </v-btn>
           </v-card-actions>
         </div>
@@ -142,14 +154,10 @@
 </template>
 
 <script lang="ts">
+import { useStore, type Recipe } from "@/store/store";
+import { mapActions } from "pinia";
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
-
-type Recipe = {
-  ingredients: string[];
-  instructions: string;
-  title: string;
-};
 
 export default defineComponent({
   name: "RecipeCard",
@@ -163,11 +171,21 @@ export default defineComponent({
   data() {
     return {
       checkedIngredients: {} as Record<number, boolean>,
-      showContent: false, // Default to showing content
+      showContent: true, // Default to showing content
     };
   },
-  computed: {},
+  computed: {
+    isUserInHistoryPage() {
+      return this.$route.path === "/history";
+    },
+  },
+  mounted() {
+    if (this.isUserInHistoryPage) {
+      this.showContent = false;
+    }
+  },
   methods: {
+    ...mapActions(useStore, ["deleteRecipe"]),
     toggleIngredient(index: number) {
       this.checkedIngredients = {
         ...this.checkedIngredients,
