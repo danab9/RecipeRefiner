@@ -3,10 +3,13 @@ FROM python:3.11-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
+# Prevents Python from buffering stdout and stderr
+ENV PYTHONUNBUFFERED=1 
 # Set work directory
 WORKDIR /app
+
+# Upgrade pip and setuptools to latest
+RUN pip install --upgrade pip setuptools
 
 # Install Python dependencies first for better caching
 COPY requirements.txt /app/
@@ -18,9 +21,6 @@ RUN apt-get update \
         build-essential \
         git \
     && rm -rf /var/lib/apt/lists/*
-
-# Upgrade pip and setuptools to latest
-RUN pip install --upgrade pip setuptools
 
 # Copy project files
 COPY . /app/
