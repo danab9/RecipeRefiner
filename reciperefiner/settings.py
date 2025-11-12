@@ -132,10 +132,8 @@ CORS_ALLOWED_ORIGINS = [
 # Credentials (cookies, sessions)
 CORS_ALLOW_CREDENTIALS = os.environ.get("CORS_ALLOW_CREDENTIALS", "False") == "True"
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",  # Your frontend dev server
-    "http://127.0.0.1:5173",  # Alternative localhost format
-]
+csrf_origins = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins.split(",") if origin]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
