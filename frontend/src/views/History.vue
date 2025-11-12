@@ -3,23 +3,23 @@
 </template>
 
 <script lang="ts">
-import { useStore } from "@/store/store";
-import { mapActions } from "pinia";
+import { useStore, type Recipe } from "@/store/store";
+import { mapActions, mapState } from "pinia";
 import { defineComponent } from "vue";
 import RecipeCard from "../components/RecipeCard.vue";
 export default defineComponent({
   name: "history",
   components: { RecipeCard },
   data() {
-    return {
-      oldRecipes: [],
-    };
+    return {};
   },
-  computed: {},
-  async mounted() {
-    this.oldRecipes = await this.getUserHistory();
-    console.log("this.oldRecipes :>> ", this.oldRecipes);
+  computed: {
+    ...mapState(useStore, ["oldRecipes"]),
   },
+  mounted() {
+    this.getUserHistory();
+  },
+
   methods: {
     ...mapActions(useStore, ["getUserHistory"]),
   },

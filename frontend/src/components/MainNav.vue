@@ -7,16 +7,23 @@
       <router-link to="/" style="margin-right: 10px">
         <v-btn>Home</v-btn>
       </router-link>
+      <router-link
+        v-if="isUserLoggedIn"
+        to="/history"
+        style="margin-right: 10px"
+      >
+        <v-btn>History</v-btn>
+      </router-link>
+    </div>
+
+    <div class="d-flex align-center">
       <router-link v-if="userName === ''" to="/login">
         <v-btn>Login</v-btn></router-link
       >
-      <v-btn v-else @click="logoutFunc"> Logout</v-btn>
-    </div>
-    <router-link v-if="isUserLoggedIn" to="/history" style="margin-right: 10px">
-      <v-btn>History</v-btn>
-    </router-link>
 
-    <div>Hello {{ displayName }}</div>
+      <v-btn v-else @click="logoutFunc"> Logout</v-btn>
+      <v-chip class="ml-3">Hello {{ displayName }}</v-chip>
+    </div>
   </nav>
 </template>
 
@@ -42,6 +49,7 @@ export default defineComponent({
   methods: {
     ...mapActions(useStore, ["signOutFunc"]),
     logoutFunc() {
+      this.$router.push("/");
       this.signOutFunc();
     },
   },
