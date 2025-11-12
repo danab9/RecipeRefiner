@@ -12,18 +12,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
-load_dotenv() # Load .env file
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = bool(os.environ.get("DEBUG", default=0)) # safer for production
-
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
+DEBUG = bool(os.environ.get("DEBUG", default=0))  # safer for production
 
 ALLOWED_HOSTS = []
 
@@ -131,8 +128,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 #     "http://127.0.0.1:5173",
 # ]
 # For now allow all: TODO change before production
-CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 # For development only - allows credentials TODO change before production
 CORS_ALLOW_CREDENTIALS = True
 
