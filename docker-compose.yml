@@ -3,13 +3,13 @@ version: '3.8'
 services:
   web:
     build: .
+    env_file:
+      - .env
     container_name: django-dev-app
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app:delegated
     ports:
       - "8000:8000"
-    environment:
-      - DEBUG=1
     stdin_open: true
     tty: true
