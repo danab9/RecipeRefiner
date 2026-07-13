@@ -22,5 +22,6 @@ urlpatterns = [
     path("api/", include("input.urls")),
     path("admin/", admin.site.urls),
     # Catch-all: any other URL serves the Vue app (client-side routing).
-    re_path(r"^(?!api/|admin/|static/).*$", TemplateView.as_view(template_name="index.html")),
+    # Exclude api/admin (with or without trailing slash) and static so those keep working.
+    re_path(r"^(?!api(?:/|$)|admin(?:/|$)|static/).*$", TemplateView.as_view(template_name="index.html")),
 ]
