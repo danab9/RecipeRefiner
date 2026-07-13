@@ -4,6 +4,10 @@ import axios from "axios";
 // Configure axios to include credentials (cookies)
 axios.defaults.withCredentials = true;
 
+// API base URL: relative "/api" in production (same-origin, served by Django),
+// full localhost URL in dev via frontend/.env.development
+const API = import.meta.env.VITE_API_URL || "/api";
+
 export type RegisterPayload = {
   username: string;
   email: string;
@@ -50,7 +54,7 @@ export const useStore = defineStore("store", {
   actions: {
     async loginFunc(payload: LoginPayload) {
       const response = await axios.post(
-        "http://localhost:8000/login/",
+        `${API}/login/`,
         payload,
         {
           withCredentials: true,
@@ -70,7 +74,7 @@ export const useStore = defineStore("store", {
     },
     async signOutFunc() {
       const response = await axios.post(
-        "http://localhost:8000/logout/",
+        `${API}/logout/`,
         {},
         {
           withCredentials: true,
@@ -88,7 +92,7 @@ export const useStore = defineStore("store", {
     },
     async registerFunc(payload: RegisterPayload) {
       const response = await axios.post(
-        "http://localhost:8000/register/",
+        `${API}/register/`,
         payload,
         {
           withCredentials: true,
@@ -112,7 +116,7 @@ export const useStore = defineStore("store", {
 
     async getRecipe(url: string) {
       const response = await axios.post(
-        "http://localhost:8000/",
+        `${API}/`,
         { url: url },
         {
           withCredentials: true,
@@ -126,7 +130,7 @@ export const useStore = defineStore("store", {
 
     async getUserHistory() {
       // Use GET request to match the API view's @api_view(["GET"]) decorator
-      const response = await axios.get("http://localhost:8000/history/", {
+      const response = await axios.get(`${API}/history/`, {
         withCredentials: true,
         headers: {
           "X-CSRFToken": getCsrfTokenFromCookie() || "",
@@ -139,7 +143,7 @@ export const useStore = defineStore("store", {
 
     async deleteRecipe(recipeId: number) {
       const response = await axios.delete(
-        `http://localhost:8000/delete/${recipeId}`,
+        `${API}/delete/${recipeId}`,
         {
           withCredentials: true,
           headers: {
