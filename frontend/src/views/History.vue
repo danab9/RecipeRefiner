@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import { useStore, type Recipe } from "@/store/store";
+import { useStore } from "@/store/store";
 import { mapActions, mapState } from "pinia";
 import { defineComponent } from "vue";
 import RecipeCard from "../components/RecipeCard.vue";
