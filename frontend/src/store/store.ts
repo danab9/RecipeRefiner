@@ -53,16 +53,12 @@ export const useStore = defineStore("store", {
   },
   actions: {
     async loginFunc(payload: LoginPayload) {
-      const response = await axios.post(
-        `${API}/login/`,
-        payload,
-        {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": getCsrfTokenFromCookie() || "",
-          },
-        }
-      );
+      const response = await axios.post(`${API}/login/`, payload, {
+        withCredentials: true,
+        headers: {
+          "X-CSRFToken": getCsrfTokenFromCookie() || "",
+        },
+      });
       // Save user info to localStorage for persistence
       if (response.status === 200 && response.data) {
         this.userId = response.data.user_id;
@@ -81,7 +77,7 @@ export const useStore = defineStore("store", {
           headers: {
             "X-CSRFToken": getCsrfTokenFromCookie() || "",
           },
-        }
+        },
       );
       // Clear user data after logout
       this.userId = null;
@@ -91,16 +87,12 @@ export const useStore = defineStore("store", {
       return response;
     },
     async registerFunc(payload: RegisterPayload) {
-      const response = await axios.post(
-        `${API}/register/`,
-        payload,
-        {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": getCsrfTokenFromCookie() || "",
-          },
-        }
-      );
+      const response = await axios.post(`${API}/register/`, payload, {
+        withCredentials: true,
+        headers: {
+          "X-CSRFToken": getCsrfTokenFromCookie() || "",
+        },
+      });
       // Save user info to localStorage for persistence
       if (
         (response.status === 201 || response.status === 200) &&
@@ -123,7 +115,7 @@ export const useStore = defineStore("store", {
           headers: {
             "X-CSRFToken": getCsrfTokenFromCookie() || "",
           },
-        }
+        },
       );
       return response;
     },
@@ -142,15 +134,12 @@ export const useStore = defineStore("store", {
     },
 
     async deleteRecipe(recipeId: number) {
-      const response = await axios.delete(
-        `${API}/delete/${recipeId}`,
-        {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": getCsrfTokenFromCookie() || "",
-          },
-        }
-      );
+      const response = await axios.delete(`${API}/delete/${recipeId}`, {
+        withCredentials: true,
+        headers: {
+          "X-CSRFToken": getCsrfTokenFromCookie() || "",
+        },
+      });
       if (response.status === 204) {
         await this.getUserHistory();
       }

@@ -15,3 +15,5 @@ test_parser.py
 .env
 input/__pycache__/*
 HANDOVER.md
+
+.env.development
