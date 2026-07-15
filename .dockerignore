@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+*.sqlite3
+db.sqlite3
+__pycache__/
+*.pyc
+.venv/
+venv/
+staticfiles/
+
+# frontend: bring in source, but not installed deps or prior builds
+frontend/node_modules/
+frontend/dist/

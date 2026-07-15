@@ -4,6 +4,10 @@ import axios from "axios";
 // Configure axios to include credentials (cookies)
 axios.defaults.withCredentials = true;
 
+// API base URL: relative "/api" in production (same-origin, served by Django),
+// full localhost URL in dev via frontend/.env.development
+const API = import.meta.env.VITE_API_URL || "/api";
+
 export type RegisterPayload = {
   username: string;
   email: string;
@@ -49,16 +53,12 @@ export const useStore = defineStore("store", {
   },
   actions: {
     async loginFunc(payload: LoginPayload) {
-      const response = await axios.post(
-        "http://localhost:8000/login/",
-        payload,
-        {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": getCsrfTokenFromCookie() || "",
-          },
-        }
-      );
+      const response = await axios.post(`${API}/login/`, payload, {
+        withCredentials: true,
+        headers: {
+          "X-CSRFToken": getCsrfTokenFromCookie() || "",
+        },
+      });
       // Save user info to localStorage for persistence
       if (response.status === 200 && response.data) {
         this.userId = response.data.user_id;
@@ -70,14 +70,14 @@ export const useStore = defineStore("store", {
     },
     async signOutFunc() {
       const response = await axios.post(
-        "http://localhost:8000/logout/",
+        `${API}/logout/`,
         {},
         {
           withCredentials: true,
           headers: {
             "X-CSRFToken": getCsrfTokenFromCookie() || "",
           },
-        }
+        },
       );
       // Clear user data after logout
       this.userId = null;
@@ -87,16 +87,12 @@ export const useStore = defineStore("store", {
       return response;
     },
     async registerFunc(payload: RegisterPayload) {
-      const response = await axios.post(
-        "http://localhost:8000/register/",
-        payload,
-        {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": getCsrfTokenFromCookie() || "",
-          },
-        }
-      );
+      const response = await axios.post(`${API}/register/`, payload, {
+        withCredentials: true,
+        headers: {
+          "X-CSRFToken": getCsrfTokenFromCookie() || "",
+        },
+      });
       // Save user info to localStorage for persistence
       if (
         (response.status === 201 || response.status === 200) &&
@@ -112,21 +108,21 @@ export const useStore = defineStore("store", {
 
     async getRecipe(url: string) {
       const response = await axios.post(
-        "http://localhost:8000/",
+        `${API}/`,
         { url: url },
         {
           withCredentials: true,
           headers: {
             "X-CSRFToken": getCsrfTokenFromCookie() || "",
           },
-        }
+        },
       );
       return response;
     },
 
     async getUserHistory() {
       // Use GET request to match the API view's @api_view(["GET"]) decorator
-      const response = await axios.get("http://localhost:8000/history/", {
+      const response = await axios.get(`${API}/history/`, {
         withCredentials: true,
         headers: {
           "X-CSRFToken": getCsrfTokenFromCookie() || "",
@@ -138,15 +134,12 @@ export const useStore = defineStore("store", {
     },
 
     async deleteRecipe(recipeId: number) {
-      const response = await axios.delete(
-        `http://localhost:8000/delete/${recipeId}`,
-        {
-          withCredentials: true,
-          headers: {
-            "X-CSRFToken": getCsrfTokenFromCookie() || "",
-          },
-        }
-      );
+      const response = await axios.delete(`${API}/delete/${recipeId}`, {
+        withCredentials: true,
+        headers: {
+          "X-CSRFToken": getCsrfTokenFromCookie() || "",
+        },
+      });
       if (response.status === 204) {
         await this.getUserHistory();
       }

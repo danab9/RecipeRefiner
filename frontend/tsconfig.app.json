@@ -5,7 +5,7 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["src/*"]
     },
     /* Linting */
     "strict": true,
@@ -15,6 +15,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-      "types": ["vitest/globals", "vite/client", "vite-plugin-pwa/vue"],
+  "types": ["vitest/globals", "vite/client", "vite-plugin-pwa/vue"],
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]
 }
