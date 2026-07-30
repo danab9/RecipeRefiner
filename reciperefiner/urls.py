@@ -17,11 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 urlpatterns = [
     path("api/", include("input.urls")),
     path("admin/", admin.site.urls),
     # Catch-all: any other URL serves the Vue app (client-side routing).
     # Exclude api/admin (with or without trailing slash) and static so those keep working.
-    re_path(r"^(?!api(?:/|$)|admin(?:/|$)|static/).*$", TemplateView.as_view(template_name="index.html")),
+    # ensure_csrf_cookie: loading the SPA sets the csrftoken cookie the frontend reads.
+    re_path(
+        r"^(?!api(?:/|$)|admin(?:/|$)|static/).*$",
+        ensure_csrf_cookie(TemplateView.as_view(template_name="index.html")),
+    ),
 ]
