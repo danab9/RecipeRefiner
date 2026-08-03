@@ -14,7 +14,7 @@ class RegisterUserTestCase(TestCase):
     def test_successful_registration_with_email(self):
         """New user can be registered plus provide email"""
         response_with_email = self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps(
                 {
                     "username": "testuser1",
@@ -30,7 +30,7 @@ class RegisterUserTestCase(TestCase):
     def test_successful_registration_no_email(self):
         """New user can be registered without providing an email"""
         response_no_email = self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps({"username": "testuser2", "password": "testpass123"}),
             content_type="application/json",
         )
@@ -41,14 +41,14 @@ class RegisterUserTestCase(TestCase):
         """Registration is rejected if the username already exists"""
         # Create first user
         self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps({"username": "testuser", "password": "pass123"}),
             content_type="application/json",
         )
 
         # Try to create same username again
         response = self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps({"username": "testuser", "password": "pass123"}),
             content_type="application/json",
         )
@@ -60,7 +60,7 @@ class RegisterUserTestCase(TestCase):
         """Registration is rejected if the email is already in use"""
         # Create first user
         self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps(
                 {
                     "username": "testuser",
@@ -73,7 +73,7 @@ class RegisterUserTestCase(TestCase):
 
         # Try to create same email again
         response = self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps(
                 {
                     "username": "testuser1",
@@ -90,7 +90,7 @@ class RegisterUserTestCase(TestCase):
     def test_missing_username(self):
         """Registration is rejected if the username is missing"""
         response = self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps({"password": "pass123"}),
             content_type="application/json",
         )
@@ -101,7 +101,7 @@ class RegisterUserTestCase(TestCase):
     def test_missing_password(self):
         """Registration is rejected if the password is missing"""
         response = self.client.post(
-            "/register/",
+            "/api/register/",
             data=json.dumps({"username": "testuser"}),
             content_type="application/json",
         )
@@ -124,7 +124,7 @@ class LoginUserTestCase(TestCase):
         """test that user can login successfully"""
 
         response = self.client.post(
-            "/login/",
+            "/api/login/",
             data=json.dumps(
                 {"username": self.test_user.username, "password": self.test_password}
             ),
@@ -139,7 +139,7 @@ class LoginUserTestCase(TestCase):
         """Test case when username is not provided"""
 
         response = self.client.post(
-            "/login/",
+            "/api/login/",
             data=json.dumps(
                 {
                     # no username
@@ -155,7 +155,7 @@ class LoginUserTestCase(TestCase):
     def test_login_missing_password(self):
         """Test case where password is not provided"""
         response = self.client.post(
-            "/login/",
+            "/api/login/",
             data=json.dumps(
                 {
                     "username": self.test_user.username
@@ -172,7 +172,7 @@ class LoginUserTestCase(TestCase):
         """Test wrong credentials - username"""
 
         response = self.client.post(
-            "/login/",
+            "/api/login/",
             data=json.dumps(
                 {
                     "username": "newusername",  # different username
@@ -189,7 +189,7 @@ class LoginUserTestCase(TestCase):
         """Test wrong credentials - password"""
 
         response = self.client.post(
-            "/login/",
+            "/api/login/",
             data=json.dumps(
                 {
                     "username": self.test_user.username,
@@ -206,7 +206,7 @@ class LoginUserTestCase(TestCase):
         self.client.login(username=self.test_user, password=self.test_password)
 
         response = self.client.post(
-            "/logout/", data=json.dumps({}), content_type="application/json"
+            "/api/logout/", data=json.dumps({}), content_type="application/json"
         )
 
         self.assertEqual(response.status_code, 200)
@@ -214,7 +214,7 @@ class LoginUserTestCase(TestCase):
 
     def test_logout_not_authenticated(self):
         response = self.client.post(
-            "/logout/", data=json.dumps({}), content_type="application/json"
+            "/api/logout/", data=json.dumps({}), content_type="application/json"
         )
 
         self.assertEqual(response.status_code, 403)
@@ -292,3 +292,28 @@ class RecipeHistoryTests(TestCase):
                 self.user, url=f"http://example.com/{i}", recipe_data={"title": str(i)}
             )
         self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 20)
+
+
+class CurrentUserTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.test_password = (
+            "testpass"  # make accessible for later, since django hashes passwords
+        )
+        self.test_user = User.objects.create_user(
+            username="testuser", password=self.test_password
+        )
+
+    def test_authenticated(self):
+        """Logged-in user gets their own id and username"""
+        self.client.login(username=self.test_user.username, password=self.test_password)
+        response = self.client.get("/api/me/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["user_id"], self.test_user.id)
+        self.assertEqual(response.json()["username"], self.test_user.username)
+
+    def test_not_authenticated(self):
+        """No Logged-in user gets 401 error"""
+        # not logging in
+        response = self.client.get("/api/me/")
+        self.assertEqual(response.status_code, 401)

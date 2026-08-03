@@ -196,3 +196,19 @@ def delete_recipe(request, recipe_id):
     return Response(
         {"message": "Deletion successful"}, status=status.HTTP_204_NO_CONTENT
     )
+
+
+@api_view(["GET"])
+def get_current_user(request):
+    """Report the session's current user, 
+    so the frontend doesn't have to trust local storage
+    """
+
+    if not request.user.is_authenticated:
+        return Response(
+            {"error": "Not Authenticated"}, status=status.HTTP_401_UNAUTHORIZED
+        )
+    return Response(
+        {"user_id": request.user.id, "username": request.user.username},
+        status=status.HTTP_200_OK,
+    )
