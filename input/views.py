@@ -197,6 +197,7 @@ def delete_recipe(request, recipe_id):
         {"message": "Deletion successful"}, status=status.HTTP_204_NO_CONTENT
     )
 
+
 @api_view(["GET"])
 def get_current_user(request):
     """Report the session's current user, 
