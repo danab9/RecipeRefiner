@@ -292,3 +292,28 @@ class RecipeHistoryTests(TestCase):
                 self.user, url=f"http://example.com/{i}", recipe_data={"title": str(i)}
             )
         self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 20)
+
+class CurrentUserTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.test_password = (
+            "testpass"  # make accessible for later, since django hashes passwords
+        )
+        self.test_user = User.objects.create_user(
+            username="testuser", password=self.test_password
+        )
+
+    def test_authenticated(self):
+        """Logged-in user gets their own id and username"""
+        self.client.login(username=self.test_user.username, password=self.test_password)
+        response = self.client.get("/api/me/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["user_id"], self.test_user.id)
+        self.assertEqual(response.json()["username", self.test_user.username])
+
+    def test_not_authenticated(self):
+        """No Logged-in user gets 401 error"""
+        # not logging in
+        response = self.client.get("/api/me/")
+        self.assertEqual(response.status_code, 401)
+    
