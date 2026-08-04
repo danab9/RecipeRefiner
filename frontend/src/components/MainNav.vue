@@ -17,19 +17,29 @@
     </div>
 
     <div class="d-flex align-center">
-      <router-link v-if="userName === ''" to="/login">
-        <v-btn>Login</v-btn></router-link
-      >
+      <!-- Wait for checkUser() before rendering auth UI, so the nav doesn't
+           flash "Login" for a logged-in user (or vice versa) on page load. -->
+      <v-progress-circular
+        v-if="!authResolved"
+        indeterminate
+        size="24"
+        width="2"
+      />
+      <template v-else>
+        <router-link v-if="!isUserLoggedIn" to="/login">
+          <v-btn>Login</v-btn></router-link
+        >
 
-      <v-btn v-else @click="logoutFunc"> Logout</v-btn>
-      <v-chip class="ml-3">Hello {{ displayName }}</v-chip>
+        <v-btn v-else @click="logoutFunc"> Logout</v-btn>
+        <v-chip class="ml-3">Hello {{ displayName }}</v-chip>
+      </template>
     </div>
   </nav>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { mapWritableState, mapActions, mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
 import { useStore } from "../store/store";
 
 export default defineComponent({
@@ -39,8 +49,7 @@ export default defineComponent({
     return {};
   },
   computed: {
-    ...mapWritableState(useStore, ["userName"]),
-    ...mapState(useStore, ["isUserLoggedIn"]),
+    ...mapState(useStore, ["userName", "isUserLoggedIn", "authResolved"]),
 
     displayName() {
       return this.userName === "" ? "Guest" : this.userName;

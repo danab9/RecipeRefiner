@@ -19,3 +19,5 @@ HANDOVER.md
 .env.development
 input/migrations/__pycache__/
 docs/
+
+.claude
