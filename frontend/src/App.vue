@@ -8,6 +8,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import MainNav from "../src/components/MainNav.vue";
+import { useStore } from "./store/store.ts";
+import { mapActions, mapState } from "pinia";
 
 export default defineComponent({
   name: "App",
@@ -15,8 +17,25 @@ export default defineComponent({
   data() {
     return {};
   },
-  computed: {},
-  methods: {},
+  computed: {
+    ...mapState(useStore, ["userId"]),
+  },
+  async mounted() {
+    await this.checkUser();
+  },
+  methods: {
+    ...mapActions(useStore, ["checkUser", "getUserHistory"]),
+  },
+  watch: {
+    userId: {
+      immediate: false,
+      handler(userId) {
+        if (userId) {
+          this.getUserHistory();
+        }
+      },
+    },
+  },
 });
 </script>
 

@@ -22,6 +22,9 @@ export type LoginPayload = {
 type StoreType = {
   userId: null | number;
   userName: string;
+  // False until the first checkUser() call settles. Components use this to tell
+  // "not logged in" apart from "we don't know yet".
+  authResolved: boolean;
   oldRecipes: Recipe[];
 };
 
@@ -39,19 +42,39 @@ function getCsrfTokenFromCookie(): string | null {
 }
 
 export const useStore = defineStore("store", {
+  // The session cookie is the source of truth for auth; checkUser() re-derives
+  // user state from the server on every app load, so nothing is persisted here.
   state: (): StoreType => ({
-    userId: localStorage.getItem("userId")
-      ? Number(localStorage.getItem("userId"))
-      : null,
-    userName: localStorage.getItem("userName") || "",
+    userId: null,
+    userName: "",
+    authResolved: false,
     oldRecipes: [],
   }),
   getters: {
     isUserLoggedIn(state) {
-      return state.userId && state.userName;
+      return Boolean(state.userId && state.userName);
     },
   },
   actions: {
+    async checkUser() {
+      try {
+        const response = await axios.get(`${API}/me/`, {
+          withCredentials: true,
+          headers: {
+            "X-CSRFToken": getCsrfTokenFromCookie() || "",
+          },
+        });
+        this.userId = response.data.user_id;
+        this.userName = response.data.username;
+      } catch {
+        // No valid session (401) or the request failed: treat as logged out.
+        this.userId = null;
+        this.userName = "";
+      } finally {
+        this.authResolved = true;
+      }
+    },
+
     async loginFunc(payload: LoginPayload) {
       const response = await axios.post(`${API}/login/`, payload, {
         withCredentials: true,
@@ -59,12 +82,9 @@ export const useStore = defineStore("store", {
           "X-CSRFToken": getCsrfTokenFromCookie() || "",
         },
       });
-      // Save user info to localStorage for persistence
       if (response.status === 200 && response.data) {
         this.userId = response.data.user_id;
         this.userName = response.data.username;
-        localStorage.setItem("userId", String(this.userId));
-        localStorage.setItem("userName", this.userName);
       }
       return response;
     },
@@ -82,8 +102,6 @@ export const useStore = defineStore("store", {
       // Clear user data after logout
       this.userId = null;
       this.userName = "";
-      localStorage.removeItem("userId");
-      localStorage.removeItem("userName");
       return response;
     },
     async registerFunc(payload: RegisterPayload) {
@@ -93,15 +111,12 @@ export const useStore = defineStore("store", {
           "X-CSRFToken": getCsrfTokenFromCookie() || "",
         },
       });
-      // Save user info to localStorage for persistence
       if (
         (response.status === 201 || response.status === 200) &&
         response.data
       ) {
         this.userId = response.data.user_id;
         this.userName = response.data.username;
-        localStorage.setItem("userId", String(this.userId));
-        localStorage.setItem("userName", this.userName);
       }
       return response;
     },
