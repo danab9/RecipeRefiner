@@ -9,7 +9,7 @@
 import { defineComponent } from "vue";
 import MainNav from "../src/components/MainNav.vue";
 import { useStore } from "./store/store.ts";
-import { mapActions } from "pinia";
+import { mapActions, mapState } from "pinia";
 
 export default defineComponent({
   name: "App",
@@ -17,12 +17,24 @@ export default defineComponent({
   data() {
     return {};
   },
-  computed: {},
+  computed: {
+    ...mapState(useStore, ["userId"]),
+  },
   async mounted() {
     await this.checkUser();
   },
   methods: {
-    ...mapActions(useStore, ["checkUser"]),
+    ...mapActions(useStore, ["checkUser", "getUserHistory"]),
+  },
+  watch: {
+    userId: {
+      immediate: false,
+      handler(userId) {
+        if (userId) {
+          this.getUserHistory();
+        }
+      },
+    },
   },
 });
 </script>

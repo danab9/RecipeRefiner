@@ -3,7 +3,7 @@
     class="d-flex justify-space-between"
     style="padding: 10px; background: #f0f0f0; margin-bottom: 20px"
   >
-    <div>
+    <div class="d-flex">
       <router-link to="/" style="margin-right: 10px">
         <v-btn>Home</v-btn>
       </router-link>
@@ -12,7 +12,15 @@
         to="/history"
         style="margin-right: 10px"
       >
-        <v-btn>History</v-btn>
+        <v-btn class="d-flex align-center" outlined>
+          <span class="ml-2">History</span>
+          <v-badge :content="oldRecipes.length" color="grey" overlap>
+            <template #badge>
+              {{ oldRecipes.length }}
+            </template>
+            <v-icon size="large" icon="mdi-clipboard-text-clock" />
+          </v-badge>
+        </v-btn>
       </router-link>
     </div>
 
@@ -49,7 +57,12 @@ export default defineComponent({
     return {};
   },
   computed: {
-    ...mapState(useStore, ["userName", "isUserLoggedIn", "authResolved"]),
+    ...mapState(useStore, [
+      "userName",
+      "isUserLoggedIn",
+      "authResolved",
+      "oldRecipes",
+    ]),
 
     displayName() {
       return this.userName === "" ? "Guest" : this.userName;
