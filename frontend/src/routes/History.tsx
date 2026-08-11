@@ -1,17 +1,17 @@
-import { Link } from '@tanstack/react-router'
-import RecipeCard from '@/components/RecipeCard'
-import Alert from '@/components/ui/Alert'
-import Spinner from '@/components/ui/Spinner'
-import { useHistory } from '@/hooks/useHistory'
-import { useMe } from '@/hooks/useMe'
+import { Link } from "@tanstack/react-router";
+import RecipeCard from "@/components/RecipeCard";
+import Alert from "@/components/ui/Alert";
+import Spinner from "@/components/ui/Spinner";
+import { useHistory } from "@/hooks/useHistory";
+import { useMe } from "@/hooks/useMe";
 
 const LOGIN_LINK_CLASSES =
-  'inline-flex h-11 items-center justify-center gap-2 rounded-control bg-accent px-4 font-medium text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent'
+  "inline-flex h-11 items-center justify-center gap-2 rounded-control bg-accent px-4 font-medium text-on-accent transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
 /** The logged-in user's saved recipe history (max 20, most recent first). */
 export default function History() {
-  const me = useMe()
-  const history = useHistory(Boolean(me.data))
+  const me = useMe();
+  const history = useHistory(Boolean(me.data));
 
   if (!me.isPending && me.data === null) {
     return (
@@ -21,7 +21,7 @@ export default function History() {
           Log in
         </Link>
       </div>
-    )
+    );
   }
 
   if (me.isPending || (Boolean(me.data) && history.isPending)) {
@@ -29,17 +29,17 @@ export default function History() {
       <div className="flex justify-center py-12">
         <Spinner size={32} />
       </div>
-    )
+    );
   }
 
   if (history.isError) {
-    return <Alert variant="error">Couldn’t load your history.</Alert>
+    return <Alert variant="error">Couldn’t load your history.</Alert>;
   }
 
-  const recipes = history.data ?? []
+  const recipes = history.data ?? [];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex max-w-5xl flex-col gap-6">
       <h1 className="text-2xl font-semibold text-content">
         History ({recipes.length})
       </h1>
@@ -53,5 +53,5 @@ export default function History() {
         </div>
       )}
     </div>
-  )
+  );
 }
