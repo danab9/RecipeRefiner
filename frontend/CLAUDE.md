@@ -50,11 +50,10 @@ frontend/
   eslint.config.mjs          → ESLint flat config
   tsconfig*.json             → TS project references (app + node)
   src/
-    main.tsx                 → App bootstrap: QueryClientProvider + RouterProvider; mounts #root
-    App.tsx                  → Root component / layout shell
-    index.css                → Tailwind entry (`@import "tailwindcss";`) + global styles
-    router/                  → TanStack Router route tree (SPA history routing)
-    routes/ (or pages/)      → Route-level pages: Home, History, Login
+    main.tsx                 → App bootstrap: QueryClientProvider + RouterProvider; applies theme pre-paint; mounts #root
+    index.css                → Tailwind entry (`@import "tailwindcss";`) + design tokens (light/dark) + global styles
+    router/index.tsx         → Code-based TanStack Router tree + the RootLayout shell (MainNav + <Outlet/>)
+    routes/                  → Route-level pages: Home, History, Login
     lib/
       axios.ts               → axios instance: withCredentials + X-CSRFToken interceptor
       queryClient.ts         → QueryClient configuration
@@ -117,7 +116,7 @@ The `Recipe` type (`{ id, title, ingredients: string[], instructions: string }`)
 
 ### Commands
 ```bash
-npm run dev        # Vite dev server (http://localhost:5173) — needs the Django API running for auth/recipes
+npm run dev        # Vite dev server (http://localhost:5555) — needs the Django API running for auth/recipes
 npm run build      # tsc -b (type-check) && vite build → dist/
 npm run preview    # Serve the production build locally
 npm run lint       # eslint .
@@ -155,6 +154,14 @@ npm run test:watch # vitest (watch mode)
   `@tailwindcss/vite` plugin — there is no `tailwind.config.js`/PostCSS chain to maintain unless a
   custom theme requires one.
 - Keep truly global styles minimal and in `src/index.css`. Prefer utilities over bespoke CSS.
+- **Design tokens + theming live in `src/index.css`.** Semantic color tokens (`canvas`, `surface`,
+  `line`, `content`, `muted`, `accent`, `accent-hover`, `on-accent`, `danger`, `danger-hover`) are
+  defined as CSS variables and exposed to Tailwind via `@theme inline`, so utilities like
+  `bg-surface`, `text-content`, `border-line`, `bg-accent`, plus `rounded-card`/`rounded-control`,
+  flip automatically between light and dark. **Use these tokens instead of hardcoded `slate-*`/hex
+  colors.** Dark mode is class-based: a `.dark` class on `<html>` (a `@custom-variant` keys `dark:`
+  off it), driven by the `theme` in `src/stores/uiStore.ts` (persisted), reflected onto `<html>` by
+  `useThemeEffect` and applied pre-paint in `main.tsx` to avoid a flash. `ThemeToggle` flips it.
 - Icons come from `lucide-react`; import the specific icon component you need.
 - **The app must be responsive and mobile-usable.** Design mobile-first — base utilities target
   small screens, then layer breakpoint variants (`sm:`, `md:`, `lg:`) up to larger viewports. Every

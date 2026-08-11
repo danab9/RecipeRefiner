@@ -17,13 +17,13 @@ Read this before making changes. For working rules, code style, and the API cont
 | **Testing** | Vitest + React Testing Library |
 | **Package manager** | npm |
 | **Default branch** | `main` |
-| **Dev port** | 5173 (Vite default) |
+| **Dev port** | 5555 (set in `vite.config.ts`) |
 | **Backend** | Django 5.2 + DRF, consumed over `/api` (run separately) |
 
 ## Essential commands
 
 ```bash
-npm run dev        # Vite dev server on http://localhost:5173 (needs the Django API running)
+npm run dev        # Vite dev server on http://localhost:5555 (needs the Django API running)
 npm run build      # tsc -b (type-check) && vite build → dist/
 npm run preview    # Serve the production build locally
 npm run lint       # eslint .
@@ -41,10 +41,9 @@ fetch recipes.
 
 | Path | Purpose |
 |------|---------|
-| `src/main.tsx` | App bootstrap — `QueryClientProvider` + `RouterProvider`; mounts `#root` |
-| `src/App.tsx` | Root component / layout shell |
-| `src/router/` | TanStack Router route tree (SPA history): `/`, `/login`, `/history` |
-| `src/routes/` (or `pages/`) | Route-level pages: Home, History, Login |
+| `src/main.tsx` | App bootstrap — `QueryClientProvider` + `RouterProvider`; applies theme pre-paint; mounts `#root` |
+| `src/router/index.tsx` | Code-based TanStack Router tree (SPA history): `/`, `/login`, `/history`; the `RootLayout` shell (nav + `<Outlet/>`) lives here |
+| `src/routes/` | Route-level pages: `Home`, `History`, `Login` |
 | `src/lib/axios.ts` | **The** axios instance — `withCredentials` + `X-CSRFToken` interceptor |
 | `src/lib/queryClient.ts` | `QueryClient` configuration |
 | `src/api/` | Typed API functions, one per endpoint — the only place axios is called |
