@@ -156,6 +156,11 @@ npm run test:watch # vitest (watch mode)
   custom theme requires one.
 - Keep truly global styles minimal and in `src/index.css`. Prefer utilities over bespoke CSS.
 - Icons come from `lucide-react`; import the specific icon component you need.
+- **The app must be responsive and mobile-usable.** Design mobile-first — base utilities target
+  small screens, then layer breakpoint variants (`sm:`, `md:`, `lg:`) up to larger viewports. Every
+  new view or component has to stay usable on a phone: no horizontal overflow, tap targets large
+  enough to hit, readable text without zooming, and content that reflows (stack on narrow, spread on
+  wide) rather than being cut off. Verify affected screens at a narrow width, not just desktop.
 
 ### Adding an API call
 1. Add a typed function in `src/api/` (this is the **only** place `axios` is imported/called).

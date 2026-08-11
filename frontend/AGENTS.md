@@ -74,6 +74,7 @@ fetch recipes.
 - **A form:** React Hook Form + a Zod schema in `src/schemas/` (`zodResolver`); derive the type via
   `z.infer`. Submit hands off to the matching TanStack Query mutation hook.
 - **Styling / layout:** Tailwind utility classes in the component; minimal globals in `src/index.css`.
+  Build **mobile-first and responsive** — see `CLAUDE.md` → Styling and `.claude/rules/components.md`.
 - **A test:** colocate a `*.test.tsx` next to the code; Vitest + RTL, setup in `src/test/`.
 
 ## Architecture rules (enforced)
@@ -91,6 +92,8 @@ fetch recipes.
   is the only exception.
 - **Use the `@` alias** for `src`-rooted imports (`@/hooks/useMe`), per `vite.config.ts`.
 - **Typed function components** in `.tsx` — explicit prop types; no plain JS.
+- **Responsive & mobile-usable UI is required.** Build mobile-first (base utilities small-screen,
+  then `sm:`/`md:`/`lg:` variants); no horizontal overflow and usable tap targets on a phone.
 - **Reuse shared types** (`Recipe`, `LoginPayload`, `RegisterPayload` in `src/types/`); don't redefine them.
 
 ## Generated / low-value paths (ignore unless the task needs them)

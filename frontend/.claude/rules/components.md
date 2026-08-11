@@ -52,6 +52,19 @@ Do **not** extract when:
 - The "shared" version would need a pile of props/flags to cover divergent cases — that is two
   components wearing a trenchcoat. Keep them separate.
 
+## Responsive & mobile usability (applies to every view/component)
+
+Every view, page, and reusable component must be **responsive and usable on mobile** — this is a
+requirement, not a nice-to-have. Work **mobile-first**: write the base Tailwind utilities for small
+screens, then add `sm:`/`md:`/`lg:` variants for wider viewports.
+
+- No horizontal scrolling or clipped content on a phone-width viewport; layouts reflow (stack on
+  narrow, spread on wide) using flex/grid utilities.
+- Tap targets are comfortably sized, text stays readable without zooming, and modals/dialogs fit
+  and scroll within a small screen.
+- Check affected screens at a narrow width (~375px), not only desktop, before considering the work
+  done. See `CLAUDE.md` → Styling (Tailwind).
+
 ## Where a new piece of UI goes
 
 - **Route-level page** → `src/routes/` (and register it in the router tree). Keep pages thin: compose
