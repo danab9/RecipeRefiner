@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+/* Class-based dark mode: the <html> element gets `.dark` from the UI store,
+   so `dark:` variants key off that class rather than the OS preference alone. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Semantic design tokens. Light values on :root, dark overrides on .dark.
+   Consumed through Tailwind via `@theme inline` below, so the utilities read
+   the CSS variables at runtime and flip when the theme class changes. */
+:root {
+  --canvas: oklch(0.985 0.002 247); /* slate-50-ish */
+  --surface: #ffffff;
+  --line: oklch(0.929 0.006 247); /* slate-200 */
+  --content: oklch(0.208 0.04 265); /* slate-900 */
+  --muted: oklch(0.554 0.04 257); /* slate-500 */
+  --accent: oklch(0.596 0.145 163); /* emerald-600 */
+  --accent-hover: oklch(0.508 0.128 165); /* emerald-700 */
+  --on-accent: #ffffff;
+  --danger: oklch(0.586 0.222 17); /* rose-600 */
+  --danger-hover: oklch(0.514 0.194 17); /* rose-700 */
+}
+
+.dark {
+  --canvas: oklch(0.13 0.028 261); /* slate-950 */
+  --surface: oklch(0.208 0.04 265); /* slate-900 */
+  --line: oklch(0.279 0.037 260); /* slate-800 */
+  --content: oklch(0.968 0.007 247); /* slate-100 */
+  --muted: oklch(0.704 0.04 257); /* slate-400 */
+  --accent: oklch(0.696 0.17 162); /* emerald-500 */
+  --accent-hover: oklch(0.765 0.177 163); /* emerald-400 */
+  --on-accent: oklch(0.13 0.028 261);
+  --danger: oklch(0.645 0.246 16); /* rose-500 */
+  --danger-hover: oklch(0.712 0.19 13); /* rose-400 */
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-content: var(--content);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--content);
+  font-family:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
