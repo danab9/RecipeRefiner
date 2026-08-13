@@ -234,8 +234,8 @@ Path-specific rules — read the relevant one when its scope applies:
 - **Editing anything under `src/`** → read `.claude/rules/lint-and-types.md` first.
 - **Creating a new view, page, or reusable component** → read `.claude/rules/components.md` first
   (modal vs. route, when to extract a shared component, where new UI goes).
-- **Creating or editing GitHub Actions workflows** (`.github/workflows/`) → read
-  `.claude/rules/cicd-workflows.md` first.
+- **Creating or editing GitHub Actions workflows** (`.github/workflows/`) → read the repo-wide
+  `../.claude/rules/cicd-workflows.md` first (it covers both frontend and Django CI).
 - **Touching the AI-facing docs themselves** → read `.claude/rules/ai-documentation-system.md` first.
 
 ## Validation and Testing
@@ -270,46 +270,12 @@ Before adding new abstractions:
 - **Meaningful names**: avoid abbreviations (`btn` → `button`, `idx` → `index`).
 - **No `console.log`** in committed code; only `console.error` in a catch block when genuinely useful.
 
-## Commit Messages
-
-```
-<type>(<scope>): <short summary in imperative mood>
-
-<optional body — explain the why, not the what>
-```
-
-| Type | When to use |
-|------|-------------|
-| `feat` | New feature or user-visible behavior |
-| `fix` | Bug fix |
-| `test` | Adding or updating tests |
-| `docs` | Documentation only |
-| `refactor` | Code change that is not a fix or feature |
-| `chore` | Build scripts, CI, dependency updates, maintenance |
-| `style` | Formatting or style-only changes with no logic change |
-| `perf` | Performance improvement |
-| `build` | Build system or dependency changes |
-| `ci` | CI/CD workflow changes |
-
-**Examples:**
-```
-feat(history): add delete confirmation to RecipeCard
-
-fix(auth): invalidate the me query on logout
-
-chore: bump @tanstack/react-query to latest minor
-```
-
-- No empty or meaningless messages such as `fix`, `changes`, or `wip` as the full message.
-- Keep commits focused around one logical concern.
-
-## Git Workflow: Non-Negotiable Rules
-- **Never commit or make code changes directly on `main`.** Automated CI/CD workflows that trigger
-  on `main` pushes are the only processes permitted to run against `main` directly.
-- Always create a new branch from `main` before touching files, unless the user explicitly instructs otherwise.
-- If you realize mid-task that you are on `main`, stop immediately, create a new branch, and continue there.
-- Branch names follow `<type>/<short-description>`, e.g. `feat/recipe-print-view`, `fix/csrf-header`,
-  `docs/frontend-guide`, `chore/update-dependencies`.
+## Commit Messages & Git Workflow
+Branching rules (never commit on `main`, branch naming) and the commit-message convention
+(`<type>(<scope>): summary`, the type table, examples) are **repo-wide** and live once in
+[`../.claude/rules/git-workflow.md`](../.claude/rules/git-workflow.md). Read that before
+committing. Use frontend scopes (`history`, `auth`, `recipe`, …) in the `<scope>` field, e.g.
+`feat(history): add delete confirmation to RecipeCard`.
 
 ## Planning Workflow
 Use this section for `/plan` mode, explicit planning requests, and large implementation tasks.

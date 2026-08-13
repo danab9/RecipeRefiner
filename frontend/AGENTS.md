@@ -109,7 +109,7 @@ fetch recipes.
 | `CLAUDE.md` | Working rules, code style, architecture, and the full API contract |
 | `README.md` | React + Vite setup notes |
 | `.claude/rules/ai-documentation-system.md` | When/how to maintain the AI-facing doc layer |
-| `.claude/rules/cicd-workflows.md` | When/how to create CI/deploy/release workflows |
+| `../.claude/rules/cicd-workflows.md` | When/how to create CI/deploy/release workflows (repo-wide: frontend + Django) |
 | `.claude/rules/components.md` | Modal-vs-route, when to extract a shared component, where new UI goes |
 | `.claude/rules/lint-and-types.md` | Lint & TypeScript discipline for this frontend |
 
