@@ -71,6 +71,17 @@ npm run build    # vue-tsc type-check + vite build -> frontend/dist
 | GET | `/api/history/` | required | newest first |
 | DELETE | `/api/delete/<recipe_id>` | required | scoped to `request.user` |
 
+## Working in the backend
+
+Conventions the existing endpoints follow — match them when adding or editing views (`input/views.py`):
+
+- **Function-based views only**, each decorated with `@api_view(["METHOD"])`, returning DRF `Response(..., status=status.HTTP_*)`. No class-based views, no viewsets.
+- **Auth is per-view, opt-in.** Protected endpoints add `@permission_classes([IsAuthenticated])`; unprotected ones (`register`, `login`, `get_url`, `me`) simply omit it. `me` is the exception — it checks `request.user.is_authenticated` by hand and returns 401 so the frontend can probe auth state without a hard error.
+- **Input is validated by hand in the view**, not via serializers — see the explicit `URLValidator` and per-field `if not username` checks. Serializers are used for **output only** (`RecipeHistorySerializer`). Keep that split unless you're deliberately changing it.
+- **Business logic lives in `services/`, views stay thin.** Scraping → `scrape_recipe()`, persistence/cap → `save_to_history()`. Put new logic in a service, not the view.
+- **Every user-owned query is scoped by `user=request.user`** (`delete_recipe`, `get_user_history`). This is the ownership guard — never look a `RecipeHistory` row up by `id` alone.
+- **Adding an endpoint** = write the view here, register the path in `input/urls.py` (under `/api/`), and add a test to `input/tests.py`. If it touches models, generate a migration — but read "Before changing anything" first; migrations are not free here.
+
 ## Environment & deploy
 
 Backend vars read in `reciperefiner/settings.py`: `SECRET_KEY`, `DEBUG`, `DJANGO_ALLOWED_HOSTS`, `DATABASE_URL` (Neon; omit for SQLite), `ALLOWED_ORIGINS`, `CORS_ALLOW_CREDENTIALS`, `CSRF_TRUSTED_ORIGINS`. Frontend: `VITE_API_URL` (`frontend/.env.development`); unset → `/api`. There is no `.env.example`.
