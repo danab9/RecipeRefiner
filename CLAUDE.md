@@ -77,13 +77,14 @@ Backend vars read in `reciperefiner/settings.py`: `SECRET_KEY`, `DEBUG`, `DJANGO
 
 Two-stage Dockerfile: node builds the SPA, python runtime copies `dist/` in and runs `collectstatic`. Container start runs `manage.py migrate` then gunicorn. Branch flow: feature branch → PR into `develop` (auto-deploys to dev) → merge `develop` → `main` promotes to prod. Branch naming: `<issue#>-<b|f>_<slug>`. Work tracked on GitHub Project board #1.
 
-## Critical hazards — read before changing anything
+## Before changing anything
 
-1. **Local, dev, and prod share one Neon database, and `migrate` runs on every container start.** Deploying a branch with a new migration to dev **migrates production**. This blocks all schema work until a separate Neon dev branch exists.
-2. **`DEBUG` is effectively always True in production** — `settings.py` uses `bool(os.environ.get("DEBUG", 0))` and `bool("0")` is `True`. Leaks stack traces on public URLs.
-3. **A live OpenAI key sits in plaintext at `api_key.txt`** (gitignored, never committed, but live — needs revoking).
-4. **`scrape_recipe` failure path is type-inconsistent** — sets `ingredients = ''` (str) into a JSONField every other path treats as a list.
-5. **No CI.** `.github/` does not exist; the suite has silently rotted before.
+This is a public repo backing a live deployment, so operational and security specifics live in the gitignored `HANDOVER.md` / `PROJECT.md`, not here. Check those first. A few structural footguns worth knowing up front:
+
+- **Environments are not isolated at the database layer.** Schema changes need care — read the environments/DB section of `PROJECT.md` before creating a migration.
+- **`DEBUG` handling in `settings.py` is subtle** — the env-var parsing does not do what it looks like it does. Confirm the effective value before relying on it.
+- **`scrape_recipe`'s failure path is type-inconsistent** — on an unsupported site it can put a non-list into the `ingredients` JSONField that every other path treats as a list.
+- **No CI.** `.github/` does not exist; the test suite can rot undetected. Run the suite manually before merging.
 
 ## Local gotchas
 
