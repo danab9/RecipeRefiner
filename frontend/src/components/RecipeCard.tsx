@@ -73,7 +73,10 @@ export default function RecipeCard({
         />
       ) : (
         <>
-          <div className="flex items-center gap-3 p-4 sm:p-6">
+          <div
+            className="flex cursor-pointer items-center gap-3 p-4 sm:p-6"
+            onClick={() => setExpanded((previous) => !previous)}
+          >
             <ChefHat
               size={24}
               className="shrink-0 text-accent"
@@ -108,7 +111,10 @@ export default function RecipeCard({
                 size="sm"
                 aria-expanded={expanded}
                 aria-label={expanded ? "Collapse recipe" : "Expand recipe"}
-                onClick={() => setExpanded((previous) => !previous)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpanded((previous) => !previous);
+                }}
               >
                 <ChevronDown
                   size={18}

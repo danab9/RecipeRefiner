@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
-import { getMe } from '@/api/auth'
-import { queryKeys } from '@/hooks/queryKeys'
-import type { User } from '@/types/recipe'
+import { useQuery } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+import { getMe } from "@/api/auth";
+import { queryKeys } from "@/hooks/queryKeys";
+import type { User } from "@/types/recipe";
 
 /**
  * The auth spine. Resolves to the current `User`, or `null` when logged out
@@ -15,14 +15,14 @@ export function useMe() {
     queryKey: queryKeys.me,
     queryFn: async () => {
       try {
-        return await getMe()
+        return await getMe();
       } catch (error) {
         // A 401 is the normal logged-out signal, not an error to surface.
         if (isAxiosError(error) && error.response?.status === 401) {
-          return null
+          return null;
         }
-        throw error
+        throw error;
       }
     },
-  })
+  });
 }

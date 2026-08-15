@@ -95,11 +95,15 @@ export default function RecipeCardEditor({
           onChange={(event) => setTitle(event.target.value)}
           className={`h-12 flex-1 text-xl font-semibold sm:text-2xl ${fieldClasses} px-3`}
         />
-        <Button variant="primary" size="sm" onClick={() => onUpdate(editedRecipe)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onUpdate(editedRecipe)}
+        >
           <Check size={16} aria-hidden="true" />
           Update
         </Button>
-        <Button variant="danger" size="sm" onClick={onCancel}>
+        <Button variant="ghost" size="sm" onClick={onCancel}>
           <X size={16} aria-hidden="true" />
           Cancel
         </Button>
