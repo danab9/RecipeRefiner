@@ -20,4 +20,8 @@ HANDOVER.md
 input/migrations/__pycache__/
 docs/
 
-.claude
+
+# Generated output of the .claude/scripts/compare.* PR helpers
+.claude/changed_files.txt
+.claude/commits.txt
+.claude/diffstat.txt
