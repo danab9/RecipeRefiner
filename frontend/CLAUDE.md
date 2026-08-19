@@ -9,10 +9,10 @@ concern and is treated here as an **external API** the frontend consumes over `/
 [API contract](#api-contract)). Backend code lives one directory up (`../reciperefiner/`, `../input/`)
 and is out of scope for this guide.
 
-> **Status:** this frontend replaces the previous Vue 3 app (`../frontend_vue/`). This document is
-> the **source of truth** for the React rewrite. Where it describes files that do not exist yet,
-> treat the layout and conventions here as the target to build toward, and keep this file in step
-> with the code as it lands.
+> **Status:** this React app replaced the previous Vue 3 SPA in place — there is no `frontend_vue/`
+> directory; the Vue code exists only in git history (before commit `cde3ed4`). This document is the
+> **source of truth** for the frontend and describes the tree as it stands. Keep it in step with the
+> code as that changes.
 
 ## Input and Context
 - Before executing given instructions, ask only the clarifying questions that are truly required to avoid doing the wrong work.
@@ -97,17 +97,9 @@ followed for any new call:
   `X-CSRFToken` header on **every** request. Django sets that cookie when the SPA is first served
   (`ensure_csrf_cookie`).
 
-Endpoints (all under the API base):
-
-| Method | Path | Purpose | Auth |
-|--------|------|---------|------|
-| `POST` | `/` | Scrape a recipe from `{ url }`; returns `{ recipe }` | optional (saves history if logged in) |
-| `POST` | `/register/` | Create account `{ username, password, email? }`; auto-logs in | no |
-| `POST` | `/login/` | `{ username, password }` | no |
-| `POST` | `/logout/` | End session | yes |
-| `GET`  | `/me/` | Current user `{ user_id, username }` or 401 | cookie |
-| `GET`  | `/history/` | `{ recipes: Recipe[] }` (max 20) | yes |
-| `DELETE` | `/delete/:id` | Remove a saved recipe | yes |
+**Endpoints:** the endpoint list (paths, auth, request/response shapes) lives once in the repo-root
+[`../CLAUDE.md`](../CLAUDE.md) under "API" — read it there rather than restating it here, so there is
+a single table to update when the API changes.
 
 The `Recipe` type (`{ id, title, ingredients: string[], instructions: string }`) is defined once in
 `src/types/`; reuse it, don't redefine it.
@@ -129,8 +121,9 @@ npm run test:watch # vitest (watch mode)
 - **Type checking is `tsc`** (via TS project references), run standalone by `npm run typecheck` and
   as the first step of `npm run build`. Lint and format are wired to their own scripts. When a change
   is under `src/`, follow `.claude/rules/lint-and-types.md`.
-- Running the full app end to end requires the Django backend (`python manage.py runserver` in the
-  repo root, with the root `.env`). The frontend alone cannot log in or fetch recipes.
+- Running the full app end to end requires the Django backend, started from the repo root with
+  `docker compose up -d --force-recreate` (**host** shell; see the root `CLAUDE.md` for why Compose
+  and not host Python). The frontend alone cannot log in or fetch recipes.
 
 ## Codebase Patterns
 

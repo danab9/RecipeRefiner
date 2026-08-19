@@ -5,12 +5,20 @@
 
 ## Branching: non-negotiable rules
 
-- **Never commit or make code changes directly on `main`.** Automated CI/CD workflows that trigger
-  on `main` pushes are the only processes permitted to run against `main` directly.
-- Always create a new branch from `main` before touching files, unless the user explicitly instructs otherwise.
-- If you realize mid-task that you are on `main`, stop immediately, create a new branch, and continue there.
-- Branch names follow `<type>/<short-description>`, e.g. `feat/recipe-print-view`, `fix/csrf-header`,
-  `docs/frontend-guide`, `chore/update-dependencies`.
+The flow is **feature branch → PR into `develop` → merge `develop` into `main`**. `develop`
+auto-deploys to the dev environment, where a change is verified before it is promoted; `main` is
+promotion-only and deploys to prod.
+
+- **Never commit or make code changes directly on `main` or `develop`.** Automated CI/CD workflows
+  are the only processes permitted to run against `main` directly.
+- Always create a new branch **from `develop`** before touching files, unless the user explicitly
+  instructs otherwise — and open the PR **against `develop`**, not `main`.
+- If you realize mid-task that you are on `main` or `develop`, stop immediately, create a new branch,
+  and continue there.
+- Branch names follow `<issue#>-<b|f>_<short-description>`, where `b` = backend and `f` = frontend:
+  `74-f_recipe-print-view`, `82-b_fix-csrf-origins`. The issue number ties the branch to GitHub
+  Project board #1. Work with no issue behind it uses `<type>/<short-description>`
+  (`chore/update-dependencies`), but prefer filing the issue first.
 
 ## Commit messages
 
