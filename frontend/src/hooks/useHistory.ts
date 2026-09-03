@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import { getHistory } from '@/api/recipes'
-import { queryKeys } from '@/hooks/queryKeys'
-import type { Recipe } from '@/types/recipe'
+import { useQuery } from "@tanstack/react-query";
+import { getHistory } from "@/api/recipes";
+import { queryKeys } from "@/hooks/queryKeys";
+import type { Recipe } from "@/types/recipe";
 
 /**
  * The logged-in user's saved recipes. `enabled` gates the fetch on being logged
@@ -13,5 +13,5 @@ export function useHistory(enabled: boolean) {
     queryKey: queryKeys.history,
     queryFn: getHistory,
     enabled,
-  })
+  });
 }

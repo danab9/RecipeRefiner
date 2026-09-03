@@ -7,56 +7,52 @@ import {
   createRoute,
   createRouter,
   Outlet,
-} from '@tanstack/react-router'
-import MainNav from '@/components/MainNav'
-import { useThemeEffect } from '@/hooks/useThemeEffect'
-import Home from '@/routes/Home'
-import Login from '@/routes/Login'
-import History from '@/routes/History'
+} from "@tanstack/react-router";
+import MainNav from "@/components/MainNav";
+import { useThemeEffect } from "@/hooks/useThemeEffect";
+import Home from "@/routes/Home";
+import Login from "@/routes/Login";
+import History from "@/routes/History";
 
 /** App shell: nav + the active route. Also syncs the theme class to <html>. */
 function RootLayout() {
-  useThemeEffect()
+  useThemeEffect();
   return (
     <div className="min-h-screen bg-canvas text-content">
       <MainNav />
-      <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
 
-const rootRoute = createRootRoute({ component: RootLayout })
+const rootRoute = createRootRoute({ component: RootLayout });
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: "/",
   component: Home,
-})
+});
 
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/login',
+  path: "/login",
   component: Login,
-})
+});
 
 const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/history',
+  path: "/history",
   component: History,
-})
+});
 
-const routeTree = rootRoute.addChildren([
-  indexRoute,
-  loginRoute,
-  historyRoute,
-])
+const routeTree = rootRoute.addChildren([indexRoute, loginRoute, historyRoute]);
 
-export const router = createRouter({ routeTree })
+export const router = createRouter({ routeTree });
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router
+    router: typeof router;
   }
 }

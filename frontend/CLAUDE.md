@@ -9,10 +9,10 @@ concern and is treated here as an **external API** the frontend consumes over `/
 [API contract](#api-contract)). Backend code lives one directory up (`../reciperefiner/`, `../input/`)
 and is out of scope for this guide.
 
-> **Status:** this frontend replaces the previous Vue 3 app (`../frontend_vue/`). This document is
-> the **source of truth** for the React rewrite. Where it describes files that do not exist yet,
-> treat the layout and conventions here as the target to build toward, and keep this file in step
-> with the code as it lands.
+> **Status:** this React app replaced the previous Vue 3 SPA in place — there is no `frontend_vue/`
+> directory; the Vue code exists only in git history (before commit `cde3ed4`). This document is the
+> **source of truth** for the frontend and describes the tree as it stands. Keep it in step with the
+> code as that changes.
 
 ## Input and Context
 - Before executing given instructions, ask only the clarifying questions that are truly required to avoid doing the wrong work.
@@ -97,17 +97,9 @@ followed for any new call:
   `X-CSRFToken` header on **every** request. Django sets that cookie when the SPA is first served
   (`ensure_csrf_cookie`).
 
-Endpoints (all under the API base):
-
-| Method | Path | Purpose | Auth |
-|--------|------|---------|------|
-| `POST` | `/` | Scrape a recipe from `{ url }`; returns `{ recipe }` | optional (saves history if logged in) |
-| `POST` | `/register/` | Create account `{ username, password, email? }`; auto-logs in | no |
-| `POST` | `/login/` | `{ username, password }` | no |
-| `POST` | `/logout/` | End session | yes |
-| `GET`  | `/me/` | Current user `{ user_id, username }` or 401 | cookie |
-| `GET`  | `/history/` | `{ recipes: Recipe[] }` (max 20) | yes |
-| `DELETE` | `/delete/:id` | Remove a saved recipe | yes |
+**Endpoints:** the endpoint list (paths, auth, request/response shapes) lives once in the repo-root
+[`../CLAUDE.md`](../CLAUDE.md) under "API" — read it there rather than restating it here, so there is
+a single table to update when the API changes.
 
 The `Recipe` type (`{ id, title, ingredients: string[], instructions: string }`) is defined once in
 `src/types/`; reuse it, don't redefine it.
@@ -129,8 +121,9 @@ npm run test:watch # vitest (watch mode)
 - **Type checking is `tsc`** (via TS project references), run standalone by `npm run typecheck` and
   as the first step of `npm run build`. Lint and format are wired to their own scripts. When a change
   is under `src/`, follow `.claude/rules/lint-and-types.md`.
-- Running the full app end to end requires the Django backend (`python manage.py runserver` in the
-  repo root, with the root `.env`). The frontend alone cannot log in or fetch recipes.
+- Running the full app end to end requires the Django backend, started from the repo root with
+  `docker compose up -d --force-recreate` (**host** shell; see the root `CLAUDE.md` for why Compose
+  and not host Python). The frontend alone cannot log in or fetch recipes.
 
 ## Codebase Patterns
 
@@ -234,8 +227,8 @@ Path-specific rules — read the relevant one when its scope applies:
 - **Editing anything under `src/`** → read `.claude/rules/lint-and-types.md` first.
 - **Creating a new view, page, or reusable component** → read `.claude/rules/components.md` first
   (modal vs. route, when to extract a shared component, where new UI goes).
-- **Creating or editing GitHub Actions workflows** (`.github/workflows/`) → read
-  `.claude/rules/cicd-workflows.md` first.
+- **Creating or editing GitHub Actions workflows** (`.github/workflows/`) → read the repo-wide
+  `../.claude/rules/cicd-workflows.md` first (it covers both frontend and Django CI).
 - **Touching the AI-facing docs themselves** → read `.claude/rules/ai-documentation-system.md` first.
 
 ## Validation and Testing
@@ -270,46 +263,12 @@ Before adding new abstractions:
 - **Meaningful names**: avoid abbreviations (`btn` → `button`, `idx` → `index`).
 - **No `console.log`** in committed code; only `console.error` in a catch block when genuinely useful.
 
-## Commit Messages
-
-```
-<type>(<scope>): <short summary in imperative mood>
-
-<optional body — explain the why, not the what>
-```
-
-| Type | When to use |
-|------|-------------|
-| `feat` | New feature or user-visible behavior |
-| `fix` | Bug fix |
-| `test` | Adding or updating tests |
-| `docs` | Documentation only |
-| `refactor` | Code change that is not a fix or feature |
-| `chore` | Build scripts, CI, dependency updates, maintenance |
-| `style` | Formatting or style-only changes with no logic change |
-| `perf` | Performance improvement |
-| `build` | Build system or dependency changes |
-| `ci` | CI/CD workflow changes |
-
-**Examples:**
-```
-feat(history): add delete confirmation to RecipeCard
-
-fix(auth): invalidate the me query on logout
-
-chore: bump @tanstack/react-query to latest minor
-```
-
-- No empty or meaningless messages such as `fix`, `changes`, or `wip` as the full message.
-- Keep commits focused around one logical concern.
-
-## Git Workflow: Non-Negotiable Rules
-- **Never commit or make code changes directly on `main`.** Automated CI/CD workflows that trigger
-  on `main` pushes are the only processes permitted to run against `main` directly.
-- Always create a new branch from `main` before touching files, unless the user explicitly instructs otherwise.
-- If you realize mid-task that you are on `main`, stop immediately, create a new branch, and continue there.
-- Branch names follow `<type>/<short-description>`, e.g. `feat/recipe-print-view`, `fix/csrf-header`,
-  `docs/frontend-guide`, `chore/update-dependencies`.
+## Commit Messages & Git Workflow
+Branching rules (never commit on `main`, branch naming) and the commit-message convention
+(`<type>(<scope>): summary`, the type table, examples) are **repo-wide** and live once in
+[`../.claude/rules/git-workflow.md`](../.claude/rules/git-workflow.md). Read that before
+committing. Use frontend scopes (`history`, `auth`, `recipe`, …) in the `<scope>` field, e.g.
+`feat(history): add delete confirmation to RecipeCard`.
 
 ## Planning Workflow
 Use this section for `/plan` mode, explicit planning requests, and large implementation tasks.
