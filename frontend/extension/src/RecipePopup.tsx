@@ -41,7 +41,7 @@ export default function RecipePopup() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="recipe-popup flex flex-col gap-4 p-4">
       <header className="flex items-center gap-2">
         <ChefHat size={20} className="text-accent" aria-hidden="true" />
         <h1 className="text-base font-semibold text-content">Recipe Refiner</h1>
