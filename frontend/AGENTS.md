@@ -42,14 +42,14 @@ fetch recipes.
 | Path | Purpose |
 |------|---------|
 | `src/main.tsx` | App bootstrap — `QueryClientProvider` + `RouterProvider`; applies theme pre-paint; mounts `#root` |
-| `src/router/index.tsx` | Code-based TanStack Router tree (SPA history): `/`, `/login`, `/history`; the `RootLayout` shell (nav + `<Outlet/>`) lives here |
-| `src/routes/` | Route-level pages: `Home`, `History`, `Login` |
+| `src/router/index.tsx` | Code-based TanStack Router tree (SPA history): `/`, `/login`, `/history`, `/privacy`; the `RootLayout` shell (nav + `<Outlet/>` + footer) lives here |
+| `src/routes/` | Route-level pages: `Home`, `History`, `Login`, `Privacy` |
 | `src/lib/axios.ts` | **The** axios instance — `withCredentials` + `X-CSRFToken` interceptor |
 | `src/lib/queryClient.ts` | `QueryClient` configuration |
 | `src/api/` | Typed API functions, one per endpoint — the only place axios is called |
 | `src/hooks/` | TanStack Query hooks wrapping `api/` (`useMe`, `useHistory`, `useScrapeRecipe`, …) |
 | `src/stores/` | Zustand stores — **client/UI state only** |
-| `src/components/` | `MainNav`, `RecipeCard`, `LoginForm`, `SignUpForm`, … |
+| `src/components/` | `MainNav`, `Footer`, `RecipeCard`, `LoginForm`, `SignUpForm`, … |
 | `src/schemas/` | Zod schemas for form/payload validation (`z.infer` the types from these) |
 | `src/types/` | Shared TypeScript types (`Recipe`, `LoginPayload`, `RegisterPayload`) |
 | `src/test/` | Vitest setup (`setupTests.ts`) + shared RTL render helpers |

@@ -9,20 +9,23 @@ import {
   Outlet,
 } from '@tanstack/react-router'
 import MainNav from '@/components/MainNav'
+import Footer from '@/components/Footer'
 import { useThemeEffect } from '@/hooks/useThemeEffect'
 import Home from '@/routes/Home'
 import Login from '@/routes/Login'
 import History from '@/routes/History'
+import PrivacyPolicy from '@/routes/Privacy'
 
-/** App shell: nav + the active route. Also syncs the theme class to <html>. */
+/** App shell: nav + the active route + footer. Also syncs the theme class to <html>. */
 function RootLayout() {
   useThemeEffect()
   return (
-    <div className="min-h-screen bg-canvas text-content">
+    <div className="flex min-h-screen flex-col bg-canvas text-content">
       <MainNav />
-      <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
         <Outlet />
       </main>
+      <Footer />
     </div>
   )
 }
@@ -47,10 +50,17 @@ const historyRoute = createRoute({
   component: History,
 })
 
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/privacy',
+  component: PrivacyPolicy,
+})
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   historyRoute,
+  privacyRoute,
 ])
 
 export const router = createRouter({ routeTree })

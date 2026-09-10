@@ -53,7 +53,7 @@ frontend/
     main.tsx                 → App bootstrap: QueryClientProvider + RouterProvider; applies theme pre-paint; mounts #root
     index.css                → Tailwind entry (`@import "tailwindcss";`) + design tokens (light/dark) + global styles
     router/index.tsx         → Code-based TanStack Router tree + the RootLayout shell (MainNav + <Outlet/>)
-    routes/                  → Route-level pages: Home, History, Login
+    routes/                  → Route-level pages: Home, History, Login, Privacy
     lib/
       axios.ts               → axios instance: withCredentials + X-CSRFToken interceptor
       queryClient.ts         → QueryClient configuration
