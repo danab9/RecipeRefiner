@@ -1,0 +1,16 @@
+/*
+ * Popup sizing. The app's global stylesheet forces `min-height: 100vh` on
+ * html/body/#root so a full page fills the viewport; in a popup that just
+ * wastes vertical space. Neutralize it and give the popup a comfortable fixed
+ * width. Chrome caps popup height at 600px and scrolls beyond that itself.
+ * This file is imported AFTER index.css so these rules win.
+ */
+html,
+body,
+#root {
+  min-height: 0;
+}
+
+body {
+  width: 400px;
+}
