@@ -8,7 +8,7 @@ export default function Home() {
   const [result, setResult] = useState<Recipe | null>(null);
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-8">
+    <div className="mx-auto flex max-w-7xl flex-col gap-8">
       <div className="text-center">
         <h1 className="text-3xl font-semibold tracking-tight text-content sm:text-4xl">
           Recipe Refiner

@@ -7,18 +7,18 @@ import {
   createRoute,
   createRouter,
   Outlet,
-} from '@tanstack/react-router'
-import MainNav from '@/components/MainNav'
-import Footer from '@/components/Footer'
-import { useThemeEffect } from '@/hooks/useThemeEffect'
-import Home from '@/routes/Home'
-import Login from '@/routes/Login'
-import History from '@/routes/History'
-import PrivacyPolicy from '@/routes/Privacy'
+} from "@tanstack/react-router";
+import MainNav from "@/components/MainNav";
+import Footer from "@/components/Footer";
+import { useThemeEffect } from "@/hooks/useThemeEffect";
+import Home from "@/routes/Home";
+import Login from "@/routes/Login";
+import History from "@/routes/History";
+import PrivacyPolicy from "@/routes/Privacy";
 
 /** App shell: nav + the active route + footer. Also syncs the theme class to <html>. */
 function RootLayout() {
-  useThemeEffect()
+  useThemeEffect();
   return (
     <div className="flex min-h-screen flex-col bg-canvas text-content">
       <MainNav />
@@ -27,46 +27,46 @@ function RootLayout() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
 
-const rootRoute = createRootRoute({ component: RootLayout })
+const rootRoute = createRootRoute({ component: RootLayout });
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: "/",
   component: Home,
-})
+});
 
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/login',
+  path: "/login",
   component: Login,
-})
+});
 
 const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/history',
+  path: "/history",
   component: History,
-})
+});
 
 const privacyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/privacy',
+  path: "/privacy",
   component: PrivacyPolicy,
-})
+});
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   historyRoute,
   privacyRoute,
-])
+]);
 
-export const router = createRouter({ routeTree })
+export const router = createRouter({ routeTree });
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router
+    router: typeof router;
   }
 }

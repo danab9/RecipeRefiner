@@ -14,19 +14,22 @@ The AI-facing files here:
 
 1. `CLAUDE.md` — working rules, code style, architecture, and the API contract for the frontend.
 2. `AGENTS.md` — path-heavy navigation and task routing.
-3. `.claude/rules/*.md` — path-specific rules, read on demand when `CLAUDE.md` points to them
-   (the `appliesTo` glob in each file is a scope hint, not an auto-load trigger):
+3. `.claude/rules/*.md` — frontend path-specific rules, read on demand when `CLAUDE.md` points to
+   them (the `appliesTo` glob in each file is a scope hint, not an auto-load trigger):
    - `lint-and-types.md` — for work under `src/**`.
    - `components.md` — for creating views, pages, or reusable components under `src/**`.
-   - `cicd-workflows.md` — for work under `.github/workflows/**`.
    - `ai-documentation-system.md` — this file.
+
+   Cross-section rules that apply to the backend too live one level up in the **repo-root**
+   `../.claude/rules/` (`cicd-workflows.md` for CI, `git-workflow.md` for branching/commits), not here.
 4. `README.md` — human-facing setup notes.
 
 > **Scope:** these files document the **React frontend**. The Django backend lives in the repo root
-> (`../`) and, if it grows its own AI docs, they belong there — do not fold backend detail into the
-> frontend guides. Note the repo root already has its own `.claude/` folder with PR-comparison
-> helper scripts; that is a separate, pre-existing tool and unrelated to this rule set. The previous
-> Vue app's docs live in `../frontend_vue/` and are historical reference only.
+> (`../`); its essentials and repo-wide routing live in the **root `CLAUDE.md`** — do not fold
+> backend detail into the frontend guides. The repo root `.claude/` is the **cross-section** layer
+> (the `/compare-pr` command plus repo-wide rules: `cicd-workflows.md`, `git-workflow.md`); these
+> frontend docs are its React-scoped subset, not a competing system. The previous Vue app's docs
+> live in `../frontend_vue/` and are historical reference only.
 
 ## When to update
 

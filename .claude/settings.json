@@ -1,10 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(curl -s -i -X OPTIONS http://localhost:8000/api/ -H \"Origin: http://localhost:5174\" -H \"Access-Control-Request-Method: POST\")",
-      "Bash(curl -s -i -X OPTIONS http://localhost:8000/api/ -H \"Origin: http://localhost:5173\" -H \"Access-Control-Request-Method: POST\")",
-      "PowerShell(Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { $p = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; \"PID $\\($_.OwningProcess\\)  $\\($p.ProcessName\\)  started $\\($p.StartTime\\)\" })",
-      "Bash(npx vue-tsc *)",
+      "Bash(git fetch:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git status:*)",
+      "Bash(git rev-parse:*)",
       "Bash(echo \"EXIT: $?\")"
     ]
   }

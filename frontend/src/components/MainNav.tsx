@@ -1,35 +1,42 @@
-import { ClipboardList, UtensilsCrossed } from 'lucide-react'
-import { Link, useNavigate } from '@tanstack/react-router'
-import Button from '@/components/ui/Button'
-import Spinner from '@/components/ui/Spinner'
-import ThemeToggle from '@/components/ThemeToggle'
-import { useMe } from '@/hooks/useMe'
-import { useHistory } from '@/hooks/useHistory'
-import { useLogout } from '@/hooks/useLogout'
+import { ClipboardList, UtensilsCrossed } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import Button from "@/components/ui/Button";
+import Spinner from "@/components/ui/Spinner";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useMe } from "@/hooks/useMe";
+import { useHistory } from "@/hooks/useHistory";
+import { useLogout } from "@/hooks/useLogout";
 
 /** Sticky top navigation: brand, history link with a saved-count badge, theme toggle, and auth area. */
 export default function MainNav() {
-  const me = useMe()
-  const history = useHistory(Boolean(me.data))
-  const logout = useLogout()
-  const navigate = useNavigate()
+  const me = useMe();
+  const history = useHistory(Boolean(me.data));
+  const logout = useLogout();
+  const navigate = useNavigate();
 
-  const historyCount = history.data?.length
+  const historyCount = history.data?.length;
 
   function handleLogout() {
     logout.mutate(undefined, {
       onSuccess: () => {
-        navigate({ to: '/' })
+        navigate({ to: "/" });
       },
-    })
+    });
   }
 
   return (
     <nav className="sticky top-0 z-40 border-b border-line bg-surface/80 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-1 sm:gap-3">
-          <Link to="/" className="flex items-center gap-1.5 font-semibold text-content">
-            <UtensilsCrossed size={20} className="text-accent" aria-hidden="true" />
+          <Link
+            to="/"
+            className="flex items-center gap-1.5 font-semibold text-content"
+          >
+            <UtensilsCrossed
+              size={20}
+              className="text-accent"
+              aria-hidden="true"
+            />
             Recipe Refiner
           </Link>
           {me.data && (
@@ -64,7 +71,7 @@ export default function MainNav() {
           ) : (
             <Link
               to="/login"
-              className="inline-flex h-9 items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="inline-flex h-9 items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent hover:bg-accent-hover focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
             >
               Login
             </Link>
@@ -72,5 +79,5 @@ export default function MainNav() {
         </div>
       </div>
     </nav>
-  )
+  );
 }
