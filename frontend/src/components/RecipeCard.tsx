@@ -37,8 +37,11 @@ export default function RecipeCard({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const deleteRecipe = useDeleteRecipe();
-  const me = useMe();
   // Edit is gated on auth plus a real backend id — an unsaved scrape has none.
+  // Skip the /api/me/ probe entirely when there's no id (fresh scrape): edit is
+  // impossible either way, so the request is pure waste. This also keeps the
+  // extension popup from calling /api/me/ at all, matching its privacy policy.
+  const me = useMe({ enabled: Boolean(recipe.id) });
   const canEdit = Boolean(me.data) && Boolean(recipe.id);
 
   function handleConfirmDelete() {

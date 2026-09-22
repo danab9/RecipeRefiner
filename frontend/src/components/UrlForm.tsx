@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isAxiosError } from "axios";
@@ -12,29 +13,46 @@ import type { Recipe } from "@/types/recipe";
 
 type UrlFormProps = {
   onResult: (recipe: Recipe) => void;
+  /** When set (e.g. from a `?url=` link), pre-fills the input and auto-refines once. */
+  initialUrl?: string;
 };
 
 const FALLBACK_ERROR_MESSAGE = "Couldn’t refine that URL. Please try again.";
 
 /** Form for submitting a recipe URL to be scraped and refined. */
-export default function UrlForm({ onResult }: UrlFormProps) {
+export default function UrlForm({ onResult, initialUrl }: UrlFormProps) {
   const scrapeRecipe = useScrapeRecipe();
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UrlValues>({ resolver: zodResolver(urlSchema) });
+  } = useForm<UrlValues>({
+    resolver: zodResolver(urlSchema),
+    defaultValues: { url: initialUrl ?? "" },
+  });
 
   async function onSubmit(values: UrlValues) {
     try {
       const recipe = await scrapeRecipe.mutateAsync(values.url);
       onResult(recipe);
-      reset();
+      // Clear explicitly (not reset()) so we don't repopulate a seeded initialUrl.
+      reset({ url: "" });
     } catch {
       // Error is surfaced below via scrapeRecipe.isError / error.
     }
   }
+
+  // Auto-refine once when an initial URL is provided. Zod still validates on submit,
+  // so a bad param just shows the field error instead of scraping.
+  const autoSubmitted = useRef(false);
+  useEffect(() => {
+    if (initialUrl && !autoSubmitted.current) {
+      autoSubmitted.current = true;
+      void handleSubmit(onSubmit)();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialUrl]);
 
   const errorMessage = isAxiosError(scrapeRecipe.error)
     ? (scrapeRecipe.error.response?.data?.error ?? FALLBACK_ERROR_MESSAGE)

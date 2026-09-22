@@ -9,8 +9,12 @@ import type { User } from "@/types/recipe";
  * (the backend answers `GET /me/` with 401). This is the React equivalent of the
  * old Vue `authResolved` flag: use `isPending` to tell "not known yet" apart from
  * "not logged in" so auth-dependent UI doesn't flash on load.
+ *
+ * Pass `enabled: false` to keep the query dormant (no `/api/me/` request) where
+ * the result can't matter — e.g. a fresh scrape that has no editable state. An
+ * omitted `enabled` keeps the default (always on).
  */
-export function useMe() {
+export function useMe(options?: { enabled?: boolean }) {
   return useQuery<User | null>({
     queryKey: queryKeys.me,
     queryFn: async () => {
@@ -24,5 +28,6 @@ export function useMe() {
         throw error;
       }
     },
+    enabled: options?.enabled,
   });
 }

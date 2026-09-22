@@ -3,7 +3,7 @@ Recipe Refiner is a web application that lets users submit a recipe URL and rece
 clean version of the recipe — skipping ads, pop-ups, and cluttered websites. 
 
 Backend implemented with Django.
-Frontend implemented with Vue.
+Frontend implemented with React.
 
 Features
 - Simplified Recipes: Users provide a recipe URL and get a clean, readable version.
