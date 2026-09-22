@@ -32,10 +32,15 @@ function RootLayout() {
 
 const rootRoute = createRootRoute({ component: RootLayout });
 
-const indexRoute = createRoute({
+export const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   component: Home,
+  // A `?url=` param (e.g. from the Chrome extension's "Open in new page") pre-fills
+  // and auto-refines on load. Anything else resolves to no URL.
+  validateSearch: (search): { url?: string } => ({
+    url: typeof search.url === "string" ? search.url : undefined,
+  }),
 });
 
 const loginRoute = createRoute({

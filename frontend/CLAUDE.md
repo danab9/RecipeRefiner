@@ -178,6 +178,11 @@ Routes are defined with **TanStack Router** (real SPA history, no hash) under `s
 `index.html` by Django's catch-all route — keep new client routes out of the `api/`, `admin/`, and
 `static/` namespaces. Prefer TanStack Router's type-safe `Link`/navigation over hand-built anchors.
 
+The **index route (`/`) accepts a `?url=` search param** (typed via `validateSearch`). When present,
+`Home` passes it to `UrlForm` as `initialUrl`, which pre-fills the input and auto-refines once on
+load. This is what the Chrome extension's "Open in new page" button targets, and it also makes any
+`/?url=<recipe>` link shareable. The URL is still validated by `urlSchema` before the scrape.
+
 ### Forms (React Hook Form + Zod)
 - Build forms with **React Hook Form**; validate with a **Zod** schema wired through
   `zodResolver` (`@hookform/resolvers/zod`). Do not hand-roll `useState`-per-field forms or ad-hoc

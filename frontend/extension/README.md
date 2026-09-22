@@ -1,10 +1,19 @@
 # RecipeRefiner Chrome extension
 
 A Manifest V3 browser extension. Open a recipe page, click the toolbar icon, and
-the popup shows the refined recipe — no copy-pasting a URL into the web app.
+the popup gives you two actions on a supported site:
 
-It is **scrape-only**: it refines the page you're on anonymously. No login, no
-history. (Those need cross-origin session cookies — a possible v2.)
+- **Quick refine** — scrapes the current page and shows the refined recipe right
+  in the popup. No copy-pasting a URL into the web app.
+- **Open in new page** — opens the full web app in a new tab at
+  `https://<host>/?url=<current-page>`, which pre-fills the URL input and
+  auto-refines, so you get the complete site experience (nav, larger card, and,
+  if you're logged in there, history).
+
+The in-popup Quick refine is **scrape-only**: it refines the page you're on
+anonymously. No login, no history. (Those need cross-origin session cookies — a
+possible v2.) The full app opened by "Open in new page" runs on its own origin,
+so a session there works normally.
 
 ## How it works (the parts, and why)
 
@@ -14,6 +23,7 @@ history. (Those need cross-origin session cookies — a possible v2.)
 | Popup UI | `src/main.tsx`, `src/RecipePopup.tsx` | A normal React page shown when you click the icon. Runs on a `chrome-extension://<id>` origin. |
 | Read the tab | `src/getActiveTabUrl.ts` | Wraps `chrome.tabs.query` to get the active tab's URL. |
 | The scrape | reuses `@/api/recipes` + `@/components/RecipeCard` | Same call and card as the web app — no duplicated UI. |
+| Open the full app | `chrome.tabs.create` in `src/RecipePopup.tsx` | "Open in new page" opens `<host>/?url=<current-page>` in a new tab. Needs **no** extra permission — only *reading* tab properties needs `activeTab`/`tabs`. |
 
 Two permissions matter, both in `manifest.json`:
 

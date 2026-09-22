@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UrlForm from "@/components/UrlForm";
@@ -21,6 +21,10 @@ const recipe: Recipe = {
 };
 
 describe("UrlForm", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("shows a validation error and does not call onResult for an invalid URL", async () => {
     const user = userEvent.setup();
     const onResult = vi.fn();
@@ -51,5 +55,27 @@ describe("UrlForm", () => {
     await waitFor(() => {
       expect(onResult).toHaveBeenCalledWith(recipe);
     });
+  });
+
+  it("pre-fills the input and auto-refines once when initialUrl is given", async () => {
+    scrapeRecipe.mockResolvedValueOnce(recipe);
+    const onResult = vi.fn();
+    renderWithProviders(
+      <UrlForm onResult={onResult} initialUrl="https://example.com/recipe" />,
+    );
+
+    await waitFor(() => {
+      expect(onResult).toHaveBeenCalledWith(recipe);
+    });
+    expect(scrapeRecipe).toHaveBeenCalledTimes(1);
+    expect(scrapeRecipe.mock.calls[0][0]).toBe("https://example.com/recipe");
+  });
+
+  it("does not auto-refine without initialUrl", () => {
+    const onResult = vi.fn();
+    renderWithProviders(<UrlForm onResult={onResult} />);
+
+    expect(scrapeRecipe).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Recipe URL")).toHaveValue("");
   });
 });

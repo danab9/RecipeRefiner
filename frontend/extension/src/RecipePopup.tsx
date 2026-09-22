@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { ChefHat, Sparkles } from "lucide-react";
+import { ChefHat, ExternalLink, Sparkles } from "lucide-react";
 import RecipeCard from "@/components/RecipeCard";
 import Alert from "@/components/ui/Alert";
 import Button from "@/components/ui/Button";
@@ -10,6 +10,10 @@ import { getActiveTabUrl } from "./getActiveTabUrl";
 import { isApprovedSite } from "./isApprovedSite";
 
 const FALLBACK_ERROR_MESSAGE = "Couldn’t refine this page. Please try again.";
+
+// The full-site origin, derived from the extension's API base (…/api → root) so
+// there is a single source of truth for the host (see frontend/.env.extension).
+const SITE_URL = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
 
 /**
  * The extension popup. It reads the active tab's URL, tells the user whether
@@ -37,6 +41,17 @@ export default function RecipePopup() {
   function handleRefine() {
     if (available && tabUrl) {
       scrape.mutate(tabUrl);
+    }
+  }
+
+  // Open the full site in a new tab with the current URL pre-filled; the SPA reads
+  // the `url` search param and auto-refines. chrome.tabs.create needs no extra
+  // permission — only reading tab properties requires activeTab/tabs.
+  function handleOpenInNewPage() {
+    if (tabUrl) {
+      chrome.tabs.create({
+        url: `${SITE_URL}/?url=${encodeURIComponent(tabUrl)}`,
+      });
     }
   }
 
@@ -68,15 +83,25 @@ export default function RecipePopup() {
           </p>
 
           {available ? (
-            <Button
-              onClick={handleRefine}
-              loading={scrape.isPending}
-              size="lg"
-              className="inline-flex h-9 items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent hover:bg-accent-hover"
-            >
-              {!scrape.isPending && <Sparkles size={18} aria-hidden="true" />}
-              {scrape.isError ? "Try again" : "Refine this recipe"}
-            </Button>
+            <>
+              <Button
+                onClick={handleRefine}
+                loading={scrape.isPending}
+                size="lg"
+                className="inline-flex h-9 w-full cursor-pointer items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent hover:bg-accent-hover"
+              >
+                {!scrape.isPending && <Sparkles size={18} aria-hidden="true" />}
+                {scrape.isError ? "Try again" : "Quick refine"}
+              </Button>
+              <Button
+                onClick={handleOpenInNewPage}
+                size="lg"
+                className="inline-flex h-9 w-full cursor-pointer items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent hover:bg-accent-hover"
+              >
+                <ExternalLink size={18} aria-hidden="true" />
+                Open in new page (recommended)
+              </Button>
+            </>
           ) : (
             <p className="text-xs text-muted">
               This site isn’t supported. Open a recipe from a supported site.
