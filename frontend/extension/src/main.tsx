@@ -11,6 +11,15 @@ if (!container) {
   throw new Error('Root container #root not found in popup HTML')
 }
 
+// The popup is a separate origin and can't read the web app's stored theme,
+// so follow the OS preference (matches the web app's no-stored-theme fallback).
+// A one-shot pre-paint toggle is enough: the popup is short-lived and has no
+// theme toggle, so the `.dark` token overrides in index.css just need to apply.
+document.documentElement.classList.toggle(
+  'dark',
+  window.matchMedia('(prefers-color-scheme: dark)').matches,
+)
+
 // RecipeCard calls useDeleteRecipe() unconditionally (rules of hooks), so a
 // QueryClient must be in context even though its delete UI never shows here.
 createRoot(container).render(

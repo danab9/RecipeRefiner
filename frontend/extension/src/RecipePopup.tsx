@@ -49,8 +49,15 @@ export default function RecipePopup() {
 
       {tabQuery.isPending && <Spinner />}
 
-      {/* Availability + action. Hidden once a recipe card is shown. */}
-      {!tabQuery.isPending && !scrape.isSuccess && (
+      {/* A failed tab read is a distinct problem, not an unsupported site. */}
+      {tabQuery.isError && (
+        <Alert variant="error">
+          Couldn’t read the current tab. Try reopening the popup.
+        </Alert>
+      )}
+
+      {/* Availability + action. Hidden on a tab-read error or once a card shows. */}
+      {!tabQuery.isPending && !tabQuery.isError && !scrape.isSuccess && (
         <div className="flex flex-col gap-2">
           <p
             className={`text-sm font-medium ${
