@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 
+/* Cover this app's source in every build's class scan. Tailwind seeds the
+   scanner from the Vite root, and the extension build overrides that root to
+   ./extension (vite.extension.config.ts), so without this it never scans
+   frontend/src and utilities used only inside shared components (RecipeCard,
+   Button, …) are dropped from the popup's stylesheet. Path is relative to this
+   file, so "." is frontend/src. Redundant but harmless for the normal build. */
+@source '.';
+
 /* Class-based dark mode: the <html> element gets `.dark` from the UI store,
    so `dark:` variants key off that class rather than the OS preference alone. */
 @custom-variant dark (&:where(.dark, .dark *));

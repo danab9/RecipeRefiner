@@ -4,12 +4,12 @@
  * same shape.
  */
 export type LoginPayload = {
-  username: string
-  password: string
-}
+  username: string;
+  password: string;
+};
 
 export type RegisterPayload = {
-  username: string
-  password: string
-  email?: string
-}
+  username: string;
+  password: string;
+  email?: string;
+};

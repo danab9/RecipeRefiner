@@ -1,28 +1,28 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from '@tanstack/react-router'
-import { isAxiosError } from 'axios'
-import { Eye, EyeOff, Lock, User } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import TextField from '@/components/ui/TextField'
-import Alert from '@/components/ui/Alert'
-import { useLogin } from '@/hooks/useLogin'
-import { loginSchema } from '@/schemas/auth'
-import type { LoginValues } from '@/schemas/auth'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "@tanstack/react-router";
+import { isAxiosError } from "axios";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
+import Button from "@/components/ui/Button";
+import TextField from "@/components/ui/TextField";
+import Alert from "@/components/ui/Alert";
+import { useLogin } from "@/hooks/useLogin";
+import { loginSchema } from "@/schemas/auth";
+import type { LoginValues } from "@/schemas/auth";
 
 type LoginFormProps = {
-  onSwitchToSignUp: () => void
-}
+  onSwitchToSignUp: () => void;
+};
 
-const FALLBACK_ERROR_MESSAGE = 'Unable to log in. Please try again.'
+const FALLBACK_ERROR_MESSAGE = "Unable to log in. Please try again.";
 
 /** Login form: username + password, wired to the login mutation. */
 export default function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
-  const navigate = useNavigate()
-  const { mutateAsync, isPending } = useLogin()
-  const [showPassword, setShowPassword] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const { mutateAsync, isPending } = useLogin();
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -30,18 +30,18 @@ export default function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
     formState: { errors },
   } = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-  })
+  });
 
   async function onSubmit(values: LoginValues) {
-    setSubmitError(null)
+    setSubmitError(null);
     try {
-      await mutateAsync(values)
-      void navigate({ to: '/' })
+      await mutateAsync(values);
+      void navigate({ to: "/" });
     } catch (error) {
       const message = isAxiosError(error)
         ? (error.response?.data?.error ?? FALLBACK_ERROR_MESSAGE)
-        : FALLBACK_ERROR_MESSAGE
-      setSubmitError(message)
+        : FALLBACK_ERROR_MESSAGE;
+      setSubmitError(message);
     }
   }
 
@@ -67,12 +67,12 @@ export default function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
           icon={<User size={18} aria-hidden="true" />}
           error={errors.username?.message}
           autoComplete="username"
-          {...register('username')}
+          {...register("username")}
         />
 
         <TextField
           label="Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           icon={<Lock size={18} aria-hidden="true" />}
           trailing={
             <Button
@@ -80,7 +80,7 @@ export default function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
               variant="ghost"
               size="sm"
               className="h-8 w-8 border-none p-0"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPassword ? "Hide password" : "Show password"}
               onClick={() => setShowPassword((current) => !current)}
             >
               {showPassword ? (
@@ -92,7 +92,7 @@ export default function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
           }
           error={errors.password?.message}
           autoComplete="current-password"
-          {...register('password')}
+          {...register("password")}
         />
 
         <Button
@@ -112,5 +112,5 @@ export default function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }

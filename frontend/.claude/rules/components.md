@@ -25,7 +25,7 @@ Use a **full route** (`src/routes/` + the TanStack Router tree) when **any** of 
 - It needs real browser back/forward / history behavior.
 - It is large or complex enough that living inside a dialog would be awkward.
 
-> RecipeRefiner today: `/`, `/login`, `/history` are routes. A delete confirmation, or a login
+> RecipeRefiner today: `/`, `/login`, `/history`, `/privacy` are routes. A delete confirmation, or a login
 > prompt triggered from elsewhere, is a **modal** — do not add a route for it.
 
 ### Modal implementation notes (plain Tailwind, no component library)
