@@ -87,16 +87,16 @@ export default function RecipePopup() {
               <Button
                 onClick={handleRefine}
                 loading={scrape.isPending}
-                size="lg"
-                className="inline-flex h-9 w-full cursor-pointer items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent hover:bg-accent-hover"
+                size="sm"
+                className="w-full"
               >
                 {!scrape.isPending && <Sparkles size={18} aria-hidden="true" />}
                 {scrape.isError ? "Try again" : "Quick refine"}
               </Button>
               <Button
                 onClick={handleOpenInNewPage}
-                size="lg"
-                className="inline-flex h-9 w-full cursor-pointer items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent hover:bg-accent-hover"
+                size="sm"
+                className="w-full"
               >
                 <ExternalLink size={18} aria-hidden="true" />
                 Open in new page (recommended)
