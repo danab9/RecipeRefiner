@@ -1,5 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 import json
 
 # RecipeHistory tests
@@ -338,6 +340,11 @@ class UpdateRecipeTests(TestCase):
         )
 
     def test_update_recipe(self):
+        # Backdate so the bumped date_time is unambiguously later.
+        self.recipe.date_time = timezone.now() - timedelta(days=1)
+        self.recipe.save()
+        original_date_time = self.recipe.date_time
+
         self.client.login(username=self.user.username, password=self.test_password)
         payload = {
             "title": "Updated",
@@ -356,6 +363,37 @@ class UpdateRecipeTests(TestCase):
         self.assertEqual(self.recipe.title, "Updated")
         self.assertEqual(self.recipe.ingredients, ["egg", "flour"])
         self.assertEqual(self.recipe.instructions, "Mix well")
+        # An edit should resurface the recipe at the top of history, same as
+        # re-submitting its URL does in save_to_history.
+        self.assertGreater(self.recipe.date_time, original_date_time)
+
+    def test_update_recipe_title_too_long(self):
+        self.client.login(username=self.user.username, password=self.test_password)
+        payload = {
+            "title": "x" * 256,
+            "ingredients": [],
+            "instructions": "Mix",
+        }
+        response = self.client.put(
+            f"/api/update/{self.recipe.id}",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_recipe_null_instructions(self):
+        """instructions is nullable on the model, so null must be accepted."""
+        self.client.login(username=self.user.username, password=self.test_password)
+        payload = {"title": "Updated", "ingredients": ["egg"], "instructions": None}
+        response = self.client.put(
+            f"/api/update/{self.recipe.id}",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+
+        self.recipe.refresh_from_db()
+        self.assertIsNone(self.recipe.instructions)
 
     def test_update_recipe_not_authenticated(self):
         payload = {"title": "Updated", "ingredients": [], "instructions": "Mix"}

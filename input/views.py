@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.utils import timezone
 
 # auth
 from django.contrib.auth.models import User
@@ -215,6 +216,11 @@ def update_recipe(request, recipe_id):
         return Response(
             {"error": "Title required"}, status=status.HTTP_400_BAD_REQUEST
         )
+    if len(title) > 255:
+        return Response(
+            {"error": "Title must be 255 characters or fewer"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     if not isinstance(ingredients, list) or not all(
         isinstance(i, str) for i in ingredients
     ):
@@ -222,16 +228,23 @@ def update_recipe(request, recipe_id):
             {"error": "Ingredients must be a list of strings"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    if not isinstance(instructions, str):
+    if instructions is not None and not isinstance(instructions, str):
         return Response(
-            {"error": "Instructions required"}, status=status.HTTP_400_BAD_REQUEST
+            {"error": "Instructions must be a string"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
     # Single UPDATE query, ownership check baked into the WHERE clause (no
     # prior SELECT needed - unlike delete_recipe we don't act on the row in
-    # Python). Returns the matched-row count, not the row itself.
+    # Python). Returns the matched-row count, not the row itself. date_time
+    # is bumped too, matching save_to_history's update path, so an edited
+    # recipe resurfaces at the top of history instead of staying buried
+    # under its old timestamp.
     updated = RecipeHistory.objects.filter(id=recipe_id, user=request.user).update(
-        title=title, ingredients=ingredients, instructions=instructions
+        title=title,
+        ingredients=ingredients,
+        instructions=instructions,
+        date_time=timezone.now(),
     )
     if not updated:
         return Response(
