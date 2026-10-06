@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { SubmitEvent } from "react";
 import {
   Check,
   ChefHat,
@@ -17,7 +18,7 @@ type RecipeCardEditorProps = {
   recipe: Recipe;
   variant: RecipeCardVariant;
   /** Called with the working copy when the user submits "Update recipe". */
-  onUpdate: (edited: Omit<Recipe, "id">) => void;
+  onUpdate: (edited: Recipe) => void;
   /** Discard edits and return to the read view (stay expanded). */
   onCancel: () => void;
   /** Collapse the card from edit mode; treated as a cancel by the parent. */
@@ -30,8 +31,8 @@ const fieldClasses =
 
 /**
  * Inline edit surface for a RecipeCard. Owns the `editedRecipe` working copy and
- * every field handler; fully replaces the card interior while editing. Persisting
- * is a future stage — for now the parent only logs the submitted recipe.
+ * every field handler; fully replaces the card interior while editing. The parent
+ * persists the submitted recipe.
  */
 export default function RecipeCardEditor({
   recipe,
@@ -41,10 +42,11 @@ export default function RecipeCardEditor({
   onCollapse,
 }: RecipeCardEditorProps) {
   const isHistory = variant === "history";
-  const [editedRecipe, setEditedRecipe] = useState<Omit<Recipe, "id">>({
+  const [editedRecipe, setEditedRecipe] = useState<Recipe>({
     title: recipe.title,
     ingredients: [...recipe.ingredients],
     instructions: recipe.instructions,
+    id: recipe.id,
   });
 
   function setTitle(title: string) {
@@ -80,8 +82,14 @@ export default function RecipeCardEditor({
     }));
   }
 
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onUpdate(editedRecipe);
+  }
+
+  // A <form> so the native `required` checks block Update on an empty field.
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <div className="flex items-center gap-3 p-4 sm:p-6">
         <ChefHat
           size={24}
@@ -91,15 +99,12 @@ export default function RecipeCardEditor({
         <input
           type="text"
           aria-label="Recipe title"
+          required
           value={editedRecipe.title}
           onChange={(event) => setTitle(event.target.value)}
           className={`h-12 flex-1 text-xl font-semibold sm:text-2xl ${fieldClasses} px-3`}
         />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onUpdate(editedRecipe)}
-        >
+        <Button type="submit" variant="ghost" size="sm">
           <Check size={16} aria-hidden="true" />
           Update
         </Button>
@@ -136,6 +141,7 @@ export default function RecipeCardEditor({
                 <input
                   type="text"
                   aria-label={`Ingredient ${index + 1}`}
+                  required
                   value={ingredient}
                   onChange={(event) =>
                     changeIngredient(index, event.target.value)
@@ -170,12 +176,13 @@ export default function RecipeCardEditor({
           </h3>
           <textarea
             aria-label="Instructions"
+            required
             value={editedRecipe.instructions}
             onChange={(event) => setInstructions(event.target.value)}
             className={`min-h-48 flex-1 resize-y p-3 leading-relaxed ${fieldClasses}`}
           />
         </div>
       </div>
-    </>
+    </form>
   );
 }

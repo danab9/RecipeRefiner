@@ -76,10 +76,35 @@ describe("RecipeCardEditor", () => {
     await user.click(screen.getByRole("button", { name: "Update" }));
 
     expect(onUpdate).toHaveBeenCalledWith({
+      id: 1,
       title: "New Title",
       ingredients: ["1 egg", "2 cups flour"],
       instructions: "Cook it well.",
     });
+  });
+
+  it.each([
+    ["title", () => screen.getByLabelText("Recipe title")],
+    ["an ingredient", () => screen.getByLabelText("Ingredient 1")],
+    ["instructions", () => screen.getByLabelText("Instructions")],
+  ])("does not call onUpdate when %s is empty", async (_, getField) => {
+    const user = userEvent.setup();
+    const { onUpdate } = renderEditor();
+
+    await user.clear(getField());
+    await user.click(screen.getByRole("button", { name: "Update" }));
+
+    expect(onUpdate).not.toHaveBeenCalled();
+  });
+
+  it("does not call onUpdate when a newly added ingredient is left empty", async () => {
+    const user = userEvent.setup();
+    const { onUpdate } = renderEditor();
+
+    await user.click(screen.getByRole("button", { name: "Add ingredient" }));
+    await user.click(screen.getByRole("button", { name: "Update" }));
+
+    expect(onUpdate).not.toHaveBeenCalled();
   });
 
   it("calls onCancel when Cancel is clicked", async () => {

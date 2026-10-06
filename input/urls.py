@@ -9,5 +9,6 @@ urlpatterns = [
     path("logout/", views.logout_user, name="logout"),
     path("history/", views.get_user_history, name="user_history"),
     path("delete/<int:recipe_id>", views.delete_recipe, name="delete_recipe"),
+    path("update/<int:recipe_id>", views.update_recipe, name="update_recipe"),
     path("me/", views.get_current_user, name="current_user")
 ]

@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.utils import timezone
 
 # auth
 from django.contrib.auth.models import User
@@ -195,6 +196,73 @@ def delete_recipe(request, recipe_id):
 
     return Response(
         {"message": "Deletion successful"}, status=status.HTTP_204_NO_CONTENT
+    )
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def update_recipe(request, recipe_id):
+    """Update a saved recipe's title, ingredients, and instructions.
+
+    Expects "title": str, "ingredients": list[str], "instructions": str.
+    Scoped to request.user, same as delete_recipe - a recipe_id owned by
+    someone else (or that doesn't exist) 404s rather than leaking existence.
+    """
+    title = request.data.get("title")
+    ingredients = request.data.get("ingredients")
+    instructions = request.data.get("instructions")
+
+    if not title:
+        return Response(
+            {"error": "Title required"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    if len(title) > 255:
+        return Response(
+            {"error": "Title must be 255 characters or fewer"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    if not isinstance(ingredients, list) or not all(
+        isinstance(i, str) for i in ingredients
+    ):
+        return Response(
+            {"error": "Ingredients must be a list of strings"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    if instructions is not None and not isinstance(instructions, str):
+        return Response(
+            {"error": "Instructions must be a string"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Single UPDATE query, ownership check baked into the WHERE clause (no
+    # prior SELECT needed - unlike delete_recipe we don't act on the row in
+    # Python). Returns the matched-row count, not the row itself. date_time
+    # is bumped too, matching save_to_history's update path, so an edited
+    # recipe resurfaces at the top of history instead of staying buried
+    # under its old timestamp.
+    updated = RecipeHistory.objects.filter(id=recipe_id, user=request.user).update(
+        title=title,
+        ingredients=ingredients,
+        instructions=instructions,
+        date_time=timezone.now(),
+    )
+    if not updated:
+        return Response(
+            {"error": "Recipe not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Echo back the validated input instead of a second SELECT - the caller
+    # already has this exact data, we're just confirming it was persisted.
+    return Response(
+        {
+            "recipe": {
+                "id": recipe_id,
+                "title": title,
+                "ingredients": ingredients,
+                "instructions": instructions,
+            }
+        },
+        status=status.HTTP_200_OK,
     )
 
 

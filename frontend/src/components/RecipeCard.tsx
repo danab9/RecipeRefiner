@@ -13,6 +13,7 @@ import RecipeCardEditor from "@/components/RecipeCardEditor";
 import Button from "@/components/ui/Button";
 import { useDeleteRecipe } from "@/hooks/useDeleteRecipe";
 import { useMe } from "@/hooks/useMe";
+import { useUpdateRecipe } from "@/hooks/useUpdateRecipe";
 import type { Recipe } from "@/types/recipe";
 
 export type RecipeCardVariant = "result" | "history";
@@ -37,6 +38,7 @@ export default function RecipeCard({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const deleteRecipe = useDeleteRecipe();
+  const updateRecipe = useUpdateRecipe();
   // Edit is gated on auth plus a real backend id — an unsaved scrape has none.
   // Skip the /api/me/ probe entirely when there's no id (fresh scrape): edit is
   // impossible either way, so the request is pure waste. This also keeps the
@@ -50,9 +52,10 @@ export default function RecipeCard({
     });
   }
 
-  function handleUpdate(edited: Omit<Recipe, "id">) {
-    // Persisting the edit is a future stage; for now just log the working copy.
-    console.log(edited);
+  function handleUpdate(edited: Recipe) {
+    updateRecipe.mutate(edited, {
+      onSuccess: () => setIsEditing(false),
+    });
   }
 
   function handleCancel() {
