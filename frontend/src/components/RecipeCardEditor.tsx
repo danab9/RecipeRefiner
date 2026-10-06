@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { SubmitEvent } from "react";
 import {
   Check,
   ChefHat,
@@ -81,8 +82,14 @@ export default function RecipeCardEditor({
     }));
   }
 
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    onUpdate(editedRecipe);
+  }
+
+  // A <form> so the native `required` checks block Update on an empty field.
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <div className="flex items-center gap-3 p-4 sm:p-6">
         <ChefHat
           size={24}
@@ -92,15 +99,12 @@ export default function RecipeCardEditor({
         <input
           type="text"
           aria-label="Recipe title"
+          required
           value={editedRecipe.title}
           onChange={(event) => setTitle(event.target.value)}
           className={`h-12 flex-1 text-xl font-semibold sm:text-2xl ${fieldClasses} px-3`}
         />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onUpdate(editedRecipe)}
-        >
+        <Button type="submit" variant="ghost" size="sm">
           <Check size={16} aria-hidden="true" />
           Update
         </Button>
@@ -137,6 +141,7 @@ export default function RecipeCardEditor({
                 <input
                   type="text"
                   aria-label={`Ingredient ${index + 1}`}
+                  required
                   value={ingredient}
                   onChange={(event) =>
                     changeIngredient(index, event.target.value)
@@ -171,12 +176,13 @@ export default function RecipeCardEditor({
           </h3>
           <textarea
             aria-label="Instructions"
+            required
             value={editedRecipe.instructions}
             onChange={(event) => setInstructions(event.target.value)}
             className={`min-h-48 flex-1 resize-y p-3 leading-relaxed ${fieldClasses}`}
           />
         </div>
       </div>
-    </>
+    </form>
   );
 }
