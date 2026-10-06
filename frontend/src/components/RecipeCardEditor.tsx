@@ -17,7 +17,7 @@ type RecipeCardEditorProps = {
   recipe: Recipe;
   variant: RecipeCardVariant;
   /** Called with the working copy when the user submits "Update recipe". */
-  onUpdate: (edited: Omit<Recipe, "id">) => void;
+  onUpdate: (edited: Recipe) => void;
   /** Discard edits and return to the read view (stay expanded). */
   onCancel: () => void;
   /** Collapse the card from edit mode; treated as a cancel by the parent. */
@@ -30,8 +30,8 @@ const fieldClasses =
 
 /**
  * Inline edit surface for a RecipeCard. Owns the `editedRecipe` working copy and
- * every field handler; fully replaces the card interior while editing. Persisting
- * is a future stage — for now the parent only logs the submitted recipe.
+ * every field handler; fully replaces the card interior while editing. The parent
+ * persists the submitted recipe.
  */
 export default function RecipeCardEditor({
   recipe,
@@ -41,10 +41,11 @@ export default function RecipeCardEditor({
   onCollapse,
 }: RecipeCardEditorProps) {
   const isHistory = variant === "history";
-  const [editedRecipe, setEditedRecipe] = useState<Omit<Recipe, "id">>({
+  const [editedRecipe, setEditedRecipe] = useState<Recipe>({
     title: recipe.title,
     ingredients: [...recipe.ingredients],
     instructions: recipe.instructions,
+    id: recipe.id,
   });
 
   function setTitle(title: string) {

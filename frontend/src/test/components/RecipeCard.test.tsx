@@ -5,12 +5,16 @@ import RecipeCard from "@/components/RecipeCard";
 import { renderWithProviders } from "@/test/renderWithProviders";
 import type { Recipe } from "@/types/recipe";
 
-const { deleteRecipe } = vi.hoisted(() => ({ deleteRecipe: vi.fn() }));
+const { deleteRecipe, updateRecipe } = vi.hoisted(() => ({
+  deleteRecipe: vi.fn(),
+  updateRecipe: vi.fn(),
+}));
 
 vi.mock("@/api/recipes", () => ({
   scrapeRecipe: vi.fn(),
   getHistory: vi.fn(),
   deleteRecipe,
+  updateRecipe,
 }));
 
 // Sign the user in so `useMe` resolves to a User and the Edit action can appear.
@@ -94,6 +98,38 @@ describe("RecipeCard", () => {
     expect(
       screen.getByRole("heading", { name: "Test Recipe" }),
     ).toBeInTheDocument();
+  });
+
+  it("sends the edited recipe on Update and returns to read view on success", async () => {
+    const user = userEvent.setup();
+    updateRecipe.mockResolvedValue({ ...recipe, title: "Edited Recipe" });
+    renderWithProviders(<RecipeCard recipe={recipe} variant="result" />);
+
+    await user.click(await screen.findByRole("button", { name: "Edit" }));
+    const titleInput = screen.getByLabelText("Recipe title");
+    await user.clear(titleInput);
+    await user.type(titleInput, "Edited Recipe");
+    await user.click(screen.getByRole("button", { name: "Update" }));
+
+    await waitFor(() =>
+      expect(screen.queryByLabelText("Recipe title")).not.toBeInTheDocument(),
+    );
+    expect(updateRecipe.mock.calls[0][0]).toEqual({
+      ...recipe,
+      title: "Edited Recipe",
+    });
+  });
+
+  it("stays in edit mode when the update fails", async () => {
+    const user = userEvent.setup();
+    updateRecipe.mockRejectedValue(new Error("Network error"));
+    renderWithProviders(<RecipeCard recipe={recipe} variant="result" />);
+
+    await user.click(await screen.findByRole("button", { name: "Edit" }));
+    await user.click(screen.getByRole("button", { name: "Update" }));
+
+    await waitFor(() => expect(updateRecipe).toHaveBeenCalled());
+    expect(screen.getByLabelText("Recipe title")).toBeInTheDocument();
   });
 
   it("collapsing the chevron while editing returns to the collapsed read view", async () => {

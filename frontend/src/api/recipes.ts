@@ -17,3 +17,14 @@ export async function getHistory(): Promise<Recipe[]> {
 export async function deleteRecipe(id: number): Promise<void> {
   await api.delete(`/delete/${id}`);
 }
+
+/** Overwrite a saved recipe's title, ingredients, and instructions. */
+export async function updateRecipe(recipe: Recipe): Promise<Recipe> {
+  const { id, title, ingredients, instructions } = recipe;
+  const { data } = await api.put<{ recipe: Recipe }>(`/update/${id}`, {
+    title,
+    ingredients,
+    instructions,
+  });
+  return data.recipe;
+}
