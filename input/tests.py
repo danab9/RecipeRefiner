@@ -317,3 +317,91 @@ class CurrentUserTests(TestCase):
         # not logging in
         response = self.client.get("/api/me/")
         self.assertEqual(response.status_code, 401)
+
+
+class UpdateRecipeTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.test_password = "testpass"
+        self.user = User.objects.create_user(
+            username="testuser", password=self.test_password
+        )
+        self.other_user = User.objects.create_user(
+            username="otheruser", password=self.test_password
+        )
+        self.recipe = RecipeHistory.objects.create(
+            user=self.user,
+            url="http://example.com/recipe",
+            title="Original",
+            ingredients=["egg"],
+            instructions="Mix",
+        )
+
+    def test_update_recipe(self):
+        self.client.login(username=self.user.username, password=self.test_password)
+        payload = {
+            "title": "Updated",
+            "ingredients": ["egg", "flour"],
+            "instructions": "Mix well",
+        }
+        response = self.client.put(
+            f"/api/update/{self.recipe.id}",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["recipe"]["title"], "Updated")
+
+        self.recipe.refresh_from_db()
+        self.assertEqual(self.recipe.title, "Updated")
+        self.assertEqual(self.recipe.ingredients, ["egg", "flour"])
+        self.assertEqual(self.recipe.instructions, "Mix well")
+
+    def test_update_recipe_not_authenticated(self):
+        payload = {"title": "Updated", "ingredients": [], "instructions": "Mix"}
+        response = self.client.put(
+            f"/api/update/{self.recipe.id}",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_recipe_wrong_owner(self):
+        """A recipe id owned by someone else 404s rather than updating it."""
+        self.client.login(
+            username=self.other_user.username, password=self.test_password
+        )
+        payload = {"title": "Hijacked", "ingredients": [], "instructions": "Mix"}
+        response = self.client.put(
+            f"/api/update/{self.recipe.id}",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 404)
+
+        self.recipe.refresh_from_db()
+        self.assertEqual(self.recipe.title, "Original")
+
+    def test_update_recipe_missing_title(self):
+        self.client.login(username=self.user.username, password=self.test_password)
+        payload = {"title": "", "ingredients": [], "instructions": "Mix"}
+        response = self.client.put(
+            f"/api/update/{self.recipe.id}",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_recipe_invalid_ingredients(self):
+        self.client.login(username=self.user.username, password=self.test_password)
+        payload = {
+            "title": "Updated",
+            "ingredients": "not a list",
+            "instructions": "Mix",
+        }
+        response = self.client.put(
+            f"/api/update/{self.recipe.id}",
+            data=json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
