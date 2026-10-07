@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Recipe Refiner",
+  "version": "0.1.0",
+  "description": "Refine the recipe on the page you're viewing into a clean, ad-free view.",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Refine this recipe"
+  },
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://reciperefiner.onrender.com/*"],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

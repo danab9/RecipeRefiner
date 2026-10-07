@@ -42,14 +42,14 @@ fetch recipes.
 | Path | Purpose |
 |------|---------|
 | `src/main.tsx` | App bootstrap — `QueryClientProvider` + `RouterProvider`; applies theme pre-paint; mounts `#root` |
-| `src/router/index.tsx` | Code-based TanStack Router tree (SPA history): `/`, `/login`, `/history`; the `RootLayout` shell (nav + `<Outlet/>`) lives here |
-| `src/routes/` | Route-level pages: `Home`, `History`, `Login` |
+| `src/router/index.tsx` | Code-based TanStack Router tree (SPA history): `/`, `/login`, `/history`, `/privacy`; the `RootLayout` shell (nav + `<Outlet/>` + footer) lives here |
+| `src/routes/` | Route-level pages: `Home`, `History`, `Login`, `Privacy` |
 | `src/lib/axios.ts` | **The** axios instance — `withCredentials` + `X-CSRFToken` interceptor |
 | `src/lib/queryClient.ts` | `QueryClient` configuration |
 | `src/api/` | Typed API functions, one per endpoint — the only place axios is called |
 | `src/hooks/` | TanStack Query hooks wrapping `api/` (`useMe`, `useHistory`, `useScrapeRecipe`, …) |
 | `src/stores/` | Zustand stores — **client/UI state only** |
-| `src/components/` | `MainNav`, `RecipeCard`, `LoginForm`, `SignUpForm`, … |
+| `src/components/` | `MainNav`, `Footer`, `RecipeCard`, `LoginForm`, `SignUpForm`, … |
 | `src/schemas/` | Zod schemas for form/payload validation (`z.infer` the types from these) |
 | `src/types/` | Shared TypeScript types (`Recipe`, `LoginPayload`, `RegisterPayload`) |
 | `src/test/` | Vitest setup (`setupTests.ts`) + shared RTL render helpers |
@@ -109,7 +109,7 @@ fetch recipes.
 | `CLAUDE.md` | Working rules, code style, architecture, and the full API contract |
 | `README.md` | React + Vite setup notes |
 | `.claude/rules/ai-documentation-system.md` | When/how to maintain the AI-facing doc layer |
-| `.claude/rules/cicd-workflows.md` | When/how to create CI/deploy/release workflows |
+| `../.claude/rules/cicd-workflows.md` | When/how to create CI/deploy/release workflows (repo-wide: frontend + Django) |
 | `.claude/rules/components.md` | Modal-vs-route, when to extract a shared component, where new UI goes |
 | `.claude/rules/lint-and-types.md` | Lint & TypeScript discipline for this frontend |
 

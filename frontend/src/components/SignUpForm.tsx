@@ -1,30 +1,30 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from '@tanstack/react-router'
-import { isAxiosError } from 'axios'
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
-import Button from '@/components/ui/Button'
-import TextField from '@/components/ui/TextField'
-import Alert from '@/components/ui/Alert'
-import { useRegister } from '@/hooks/useRegister'
-import { registerSchema } from '@/schemas/auth'
-import type { RegisterValues } from '@/schemas/auth'
-import type { RegisterPayload } from '@/types/auth'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "@tanstack/react-router";
+import { isAxiosError } from "axios";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import Button from "@/components/ui/Button";
+import TextField from "@/components/ui/TextField";
+import Alert from "@/components/ui/Alert";
+import { useRegister } from "@/hooks/useRegister";
+import { registerSchema } from "@/schemas/auth";
+import type { RegisterValues } from "@/schemas/auth";
+import type { RegisterPayload } from "@/types/auth";
 
 type SignUpFormProps = {
-  onSwitchToLogin: () => void
-}
+  onSwitchToLogin: () => void;
+};
 
-const FALLBACK_ERROR_MESSAGE = 'Unable to sign up. Please try again.'
+const FALLBACK_ERROR_MESSAGE = "Unable to sign up. Please try again.";
 
 /** Sign-up form: username, optional email, password + confirmation. */
 export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
-  const navigate = useNavigate()
-  const { mutateAsync, isPending } = useRegister()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const { mutateAsync, isPending } = useRegister();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -32,23 +32,23 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
     formState: { errors },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-  })
+  });
 
   async function onSubmit(values: RegisterValues) {
-    setSubmitError(null)
+    setSubmitError(null);
     const payload: RegisterPayload = {
       username: values.username,
       password: values.password,
       email: values.email || undefined,
-    }
+    };
     try {
-      await mutateAsync(payload)
-      void navigate({ to: '/' })
+      await mutateAsync(payload);
+      void navigate({ to: "/" });
     } catch (error) {
       const message = isAxiosError(error)
         ? (error.response?.data?.error ?? FALLBACK_ERROR_MESSAGE)
-        : FALLBACK_ERROR_MESSAGE
-      setSubmitError(message)
+        : FALLBACK_ERROR_MESSAGE;
+      setSubmitError(message);
     }
   }
 
@@ -74,7 +74,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           icon={<User size={18} aria-hidden="true" />}
           error={errors.username?.message}
           autoComplete="username"
-          {...register('username')}
+          {...register("username")}
         />
 
         <TextField
@@ -83,12 +83,12 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           icon={<Mail size={18} aria-hidden="true" />}
           error={errors.email?.message}
           autoComplete="email"
-          {...register('email')}
+          {...register("email")}
         />
 
         <TextField
           label="Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           icon={<Lock size={18} aria-hidden="true" />}
           trailing={
             <Button
@@ -96,7 +96,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               variant="ghost"
               size="sm"
               className="h-8 w-8 border-none p-0"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-label={showPassword ? "Hide password" : "Show password"}
               onClick={() => setShowPassword((current) => !current)}
             >
               {showPassword ? (
@@ -108,12 +108,12 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           }
           error={errors.password?.message}
           autoComplete="new-password"
-          {...register('password')}
+          {...register("password")}
         />
 
         <TextField
           label="Confirm password"
-          type={showConfirmPassword ? 'text' : 'password'}
+          type={showConfirmPassword ? "text" : "password"}
           icon={<Lock size={18} aria-hidden="true" />}
           trailing={
             <Button
@@ -122,7 +122,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               size="sm"
               className="h-8 w-8 border-none p-0"
               aria-label={
-                showConfirmPassword ? 'Hide password' : 'Show password'
+                showConfirmPassword ? "Hide password" : "Show password"
               }
               onClick={() => setShowConfirmPassword((current) => !current)}
             >
@@ -135,7 +135,7 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           }
           error={errors.confirmPassword?.message}
           autoComplete="new-password"
-          {...register('confirmPassword')}
+          {...register("confirmPassword")}
         />
 
         <Button
@@ -155,5 +155,5 @@ export default function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }

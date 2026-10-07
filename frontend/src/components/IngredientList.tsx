@@ -1,29 +1,29 @@
-import { useState } from 'react'
-import { Circle, CircleCheck } from 'lucide-react'
+import { useState } from "react";
+import { Circle, CircleCheck } from "lucide-react";
 
 type IngredientListProps = {
-  ingredients: string[]
-}
+  ingredients: string[];
+};
 
 /** Checklist of recipe ingredients; checked state is local, ephemeral UI state. */
 export default function IngredientList({ ingredients }: IngredientListProps) {
-  const [checked, setChecked] = useState<Record<number, boolean>>({})
+  const [checked, setChecked] = useState<Record<number, boolean>>({});
 
   function toggle(index: number) {
-    setChecked((previous) => ({ ...previous, [index]: !previous[index] }))
+    setChecked((previous) => ({ ...previous, [index]: !previous[index] }));
   }
 
   return (
     <ul className="flex flex-col">
       {ingredients.map((ingredient, index) => {
-        const isChecked = Boolean(checked[index])
+        const isChecked = Boolean(checked[index]);
         return (
           <li key={index}>
             <button
               type="button"
               aria-pressed={isChecked}
               onClick={() => toggle(index)}
-              className="flex w-full min-h-11 items-center gap-2 rounded-control px-2 py-2 text-left hover:bg-content/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="flex min-h-11 w-full items-center gap-2 rounded-control px-2 py-2 text-left hover:bg-content/5 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
             >
               {isChecked ? (
                 <CircleCheck
@@ -39,14 +39,16 @@ export default function IngredientList({ ingredients }: IngredientListProps) {
                 />
               )}
               <span
-                className={isChecked ? 'line-through text-muted' : 'text-content'}
+                className={
+                  isChecked ? "text-muted line-through" : "text-content"
+                }
               >
                 {ingredient}
               </span>
             </button>
           </li>
-        )
+        );
       })}
     </ul>
-  )
+  );
 }

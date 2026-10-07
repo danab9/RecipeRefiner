@@ -1,6 +1,6 @@
-import '@testing-library/jest-dom/vitest'
-import { afterEach, vi } from 'vitest'
-import { cleanup } from '@testing-library/react'
+import "@testing-library/jest-dom/vitest";
+import { afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
 
 // jsdom has no matchMedia; the UI store reads it at init to pick a default theme.
 if (!window.matchMedia) {
@@ -13,10 +13,10 @@ if (!window.matchMedia) {
     addListener: vi.fn(),
     removeListener: vi.fn(),
     dispatchEvent: vi.fn(),
-  }))
+  }));
 }
 
 // Unmount React trees between tests to avoid cross-test leakage.
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});

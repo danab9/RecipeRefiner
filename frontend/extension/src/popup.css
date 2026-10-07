@@ -1,0 +1,54 @@
+/*
+ * Popup sizing. The app's global stylesheet forces `min-height: 100vh` on
+ * html/body/#root so a full page fills the viewport; in a popup that just
+ * wastes vertical space. Neutralize it and give the popup a comfortable fixed
+ * width. Chrome caps popup height at 600px and scrolls beyond that itself.
+ * This file is imported AFTER index.css so these rules win.
+ */
+html,
+body,
+#root {
+  min-height: 0;
+}
+
+body {
+  width: 480px;
+}
+
+/*
+ * Moderate popup-only "zoom". The popup is its own document, so raising the
+ * root font size scales every rem-based Tailwind utility (fonts, padding, gaps)
+ * here and nowhere else. Default is 16px.
+ */
+html {
+  font-size: 17px;
+}
+
+/*
+ * Popup-only overrides of shared-component (RecipeCard / IngredientList) spacing
+ * and alignment. Scoped under `.recipe-popup` and anchored to stable *semantic*
+ * structure (ul/li/button, h2, h3+p) rather than Tailwind class names, so they
+ * don't couple to those components' exact classes. `:has()` is safe: the popup
+ * only runs in modern Chrome (105+). These rules win over Tailwind because this
+ * file is imported after index.css.
+ */
+
+/* Ingredients: align each checkbox to the first line of text, not the vertical
+   center of a wrapped row, so short and long ingredients read as the same size. */
+.recipe-popup ul > li > button {
+  align-items: flex-start;
+}
+
+/* Trim the vertical space above/below the recipe title (keep its horizontal
+   padding). The title row is the only element with a direct <h2> child. */
+.recipe-popup div:has(> h2) {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Add separation between the ingredients and instructions blocks. In the narrow
+   popup the card grid is single-column; the instructions block is the one with
+   both an <h3> heading and a <p> body (ingredients has <h3> + <ul>). */
+.recipe-popup div:has(> h3):has(> p) {
+  margin-top: 1.25rem;
+}

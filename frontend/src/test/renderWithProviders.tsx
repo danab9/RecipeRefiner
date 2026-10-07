@@ -1,12 +1,12 @@
-import type { ReactElement, ReactNode } from 'react'
-import { render } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ReactElement, ReactNode } from "react";
+import { render } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 /** A fresh QueryClient per test, with retries off for deterministic behavior. */
 export function makeTestQueryClient() {
   return new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  })
+  });
 }
 
 /**
@@ -19,7 +19,9 @@ export function renderWithProviders(
   { client = makeTestQueryClient() }: { client?: QueryClient } = {},
 ) {
   function Wrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    return (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
   }
-  return { client, ...render(ui, { wrapper: Wrapper }) }
+  return { client, ...render(ui, { wrapper: Wrapper }) };
 }

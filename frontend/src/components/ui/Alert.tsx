@@ -1,27 +1,27 @@
-import { CircleAlert, CircleCheck, X } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { CircleAlert, CircleCheck, X } from "lucide-react";
+import type { ReactNode } from "react";
 
-type AlertVariant = 'error' | 'success'
+type AlertVariant = "error" | "success";
 
 type AlertProps = {
-  variant: AlertVariant
-  children: ReactNode
-  onClose?: () => void
-}
+  variant: AlertVariant;
+  children: ReactNode;
+  onClose?: () => void;
+};
 
 const variantClasses: Record<AlertVariant, string> = {
-  error: 'bg-danger/10 text-danger',
-  success: 'bg-accent/10 text-accent',
-}
+  error: "bg-danger/10 text-danger",
+  success: "bg-accent/10 text-accent",
+};
 
 const variantIcon: Record<AlertVariant, typeof CircleAlert> = {
   error: CircleAlert,
   success: CircleCheck,
-}
+};
 
 /** Tonal inline alert for surfacing errors or success feedback. */
 export default function Alert({ variant, children, onClose }: AlertProps) {
-  const Icon = variantIcon[variant]
+  const Icon = variantIcon[variant];
 
   return (
     <div
@@ -35,11 +35,11 @@ export default function Alert({ variant, children, onClose }: AlertProps) {
           type="button"
           onClick={onClose}
           aria-label="Dismiss"
-          className="shrink-0 rounded-control p-1 hover:bg-content/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="shrink-0 rounded-control p-1 hover:bg-content/10 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
         >
           <X size={16} aria-hidden="true" />
         </button>
       )}
     </div>
-  )
+  );
 }

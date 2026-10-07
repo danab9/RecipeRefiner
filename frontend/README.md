@@ -29,17 +29,52 @@ build is served same-origin by Django, where `/api` is correct.
 ## Commands
 
 ```bash
-npm run dev        # Vite dev server → http://localhost:5555
-npm run build      # tsc -b (type-check) && vite build → dist/
-npm run preview    # serve the production build locally
-npm run lint       # eslint .
-npm run typecheck  # tsc -b --noEmit
-npm run format     # prettier --write .
-npm run test       # vitest run (one-shot)
-npm run test:watch # vitest (watch mode)
+npm run dev             # Vite dev server → http://localhost:5555
+npm run build           # tsc -b (type-check) && vite build → dist/
+npm run build:extension # build the Chrome extension → extension/dist/ (see below)
+npm run preview         # serve the production build locally
+npm run lint            # eslint .
+npm run typecheck       # tsc -b --noEmit
+npm run format          # prettier --write .
+npm run test            # vitest run (one-shot)
+npm run test:watch      # vitest (watch mode)
 ```
 
 Run `npm run dev` alongside the backend; the frontend alone cannot authenticate or fetch recipes.
+
+## Chrome extension
+
+This package also builds a **Chrome (Manifest V3) browser extension** from the same source. Open a
+recipe page, click the toolbar icon, and a popup shows the refined recipe — no copy-pasting a URL
+into the web app. It is scrape-only and anonymous (no login, no history), and it reuses the app's
+API layer and `RecipeCard` component — a second Vite build target of this package, not a separate
+app.
+
+The extension source lives in `extension/`. Its config, host setup, permissions, and how-it-works
+notes have their own doc: **[`extension/README.md`](extension/README.md)** — read it before changing
+the extension.
+
+### Build
+
+From `frontend/`:
+
+```bash
+npm install            # once (pulls @types/chrome)
+npm run build:extension
+```
+
+The build reads `.env.extension` (`VITE_API_URL`) via `--mode extension` and emits `extension/dist/`.
+That folder **is** the unpacked extension.
+
+### Load into Chrome
+
+1. Go to `chrome://extensions`.
+2. Turn on **Developer mode** (top-right).
+3. Click **Load unpacked** and select `frontend/extension/dist/`.
+4. Pin the extension, open a recipe page, and click the icon.
+
+After any code change, re-run `npm run build:extension`, then click the **reload** (↻) icon on the
+extension's card in `chrome://extensions` — there is no hot reload.
 
 ## Theming
 

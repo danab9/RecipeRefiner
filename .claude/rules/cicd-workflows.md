@@ -1,8 +1,9 @@
 # CI/CD and release workflows
 
-> Read this when a task involves creating, updating, or reviewing GitHub Actions workflows —
-> referenced from `CLAUDE.md`. The `appliesTo` glob above is a scope hint; Claude Code loads this
-> file on demand when `CLAUDE.md` points to it, not automatically.
+> Repo-wide rule — read this when a task involves creating, updating, or reviewing GitHub Actions
+> workflows. It covers **both** the React frontend and the Django backend CI, so it lives at the
+> repo root and is referenced from the root `CLAUDE.md` (and `frontend/CLAUDE.md`). Claude Code
+> loads it on demand when a `CLAUDE.md` points to it, not automatically.
 
 **Current state:** the repository has **no `.github/workflows/` yet.** Create one only when the task
 calls for it. Keep any workflow synchronized with the repo the same way you keep `README.md` and
