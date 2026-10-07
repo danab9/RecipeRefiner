@@ -4,10 +4,12 @@ from django.utils import timezone
 from datetime import timedelta
 import json
 
+from unittest.mock import patch
+
 # RecipeHistory tests
 from .models import RecipeHistory
 from .services.history_service import save_to_history
-
+from .services.recipe_processor import RecipeExtractionError
 
 class RegisterUserTestCase(TestCase):
     def setUp(self):
@@ -443,3 +445,27 @@ class UpdateRecipeTests(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 400)
+
+
+class GetUrlExtractionFailureTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="testuser",
+            password="pass"
+        )
+
+    @patch("input.views.scrape_recipe")
+    def test_unsupported_site_returns_422(self, mock_scrape):
+        mock_scrape.side_effect = RecipeExtractionError("nope")
+
+        self.client.login(username=self.user.username, password="pass")
+        
+        response = self.client.post(
+                    "/api/",
+                    data=json.dumps({"url": "http://example.com/recipe"}),
+                    content_type="application/json",
+                )
+
+        self.assertEqual(response.status_code, 422)
+        # Check the recipe doens't exist in the database
+        self.assertEqual(RecipeHistory.objects.filter(user=self.user).count(), 0)
