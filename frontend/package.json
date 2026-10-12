@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:open": "vite --open",
     "build": "tsc -b && vite build",
     "build:extension": "vite build --config vite.extension.config.ts --mode extension",
     "lint": "eslint .",

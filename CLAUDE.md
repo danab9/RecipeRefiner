@@ -46,6 +46,9 @@ separate frontend deploy target.
 Local dev is **Docker Compose only** — no host virtualenv, no Django on host Python.
 
 ```bash
+# host — start backend (if needed) + frontend dev server, open http://localhost:5555 (blocks)
+./scripts/open-local.sh
+
 # host — start, or restart after ANY .env change (.env is read at container CREATION, not start)
 docker compose up -d --force-recreate
 

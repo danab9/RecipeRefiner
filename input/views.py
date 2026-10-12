@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate, login, logout
 import json
 
 # local code
-from .services.recipe_processor import scrape_recipe
+from .services.recipe_processor import scrape_recipe, RecipeExtractionError
 from .services.history_service import save_to_history
 from .models import RecipeHistory
 from .serializers import RecipeHistorySerializer
@@ -153,8 +153,13 @@ def get_url(request):
             {"error": "Invalid URL input"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-    # process recipe for everyone
-    data = scrape_recipe(url_string)
+    try:
+        # process recipe for everyone
+        data = scrape_recipe(url_string)
+    except RecipeExtractionError as e:
+        return Response(
+            {"error": str(e)}, status=status.HTTP_422_UNPROCESSABLE_ENTITY
+        )
 
     # if user is authenticated save history
     if request.user.is_authenticated:
