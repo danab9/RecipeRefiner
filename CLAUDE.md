@@ -118,7 +118,11 @@ here rather than expanding this file.
 
 Backend vars read in `reciperefiner/settings.py`: `SECRET_KEY`, `DEBUG`, `DJANGO_ALLOWED_HOSTS`, `DATABASE_URL` (Neon Postgres; omit for SQLite), `ALLOWED_ORIGINS`, `CORS_ALLOW_CREDENTIALS`, `CSRF_TRUSTED_ORIGINS`. Frontend: `VITE_API_URL` (`frontend/.env.development`); unset → `/api`. There is no `.env.example`. Never hardcode secrets.
 
-Two-stage Dockerfile: node builds the SPA, python runtime copies `dist/` in and runs `collectstatic`. Container start runs `manage.py migrate` then gunicorn. Deploys are Render-driven: `develop` auto-deploys to dev, `main` to prod. Branching and commit conventions live in [`.claude/rules/git-workflow.md`](.claude/rules/git-workflow.md); work is tracked on GitHub Project board #1.
+Two-stage Dockerfile: node builds the SPA, python runtime copies `dist/` in and runs `collectstatic`. Container start runs `manage.py migrate` then gunicorn. Deploys are Render-driven: `develop` auto-deploys to dev, `main` to prod.
+
+**Prod is kept awake by an external pinger.** Render's free plan sleeps a service after 15 minutes without traffic, and the first request then takes 30–60 s. A cron-job.org job sends `GET https://reciperefiner.onrender.com/` every 10 minutes so prod never sleeps. It pings `/` because it returns 200 without touching the database (`/api/me/` returns 401, which cron-job.org counts as a failure). Do not add a pinger for dev: free instance hours (750/month) are shared per workspace, and keeping both awake runs them out before month end. The job lives in an external cron-job.org account, not in this repo.
+
+Branching and commit conventions live in [`.claude/rules/git-workflow.md`](.claude/rules/git-workflow.md); work is tracked on GitHub Project board #1.
 
 ## Before changing anything
 

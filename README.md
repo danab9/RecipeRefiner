@@ -13,6 +13,13 @@ Features
 <img src="usage_gif.gif" width="800"/>
 </p>
 
+## Hosting
+
+The app runs on Render's free plan, which puts a service to sleep after 15 minutes without traffic.
+To keep production awake, a [cron-job.org](https://cron-job.org) job pings
+https://reciperefiner.onrender.com/ every 10 minutes. Only production is pinged, so the dev
+environment can still sleep and save free instance hours.
+
 -----
 ## Acknowledgments / Credits
 

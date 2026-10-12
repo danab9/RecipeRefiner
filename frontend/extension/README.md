@@ -38,7 +38,12 @@ Two permissions matter, both in `manifest.json`:
 
 Why no cookies/CSRF: the scrape endpoint (`POST /api/`) is anonymous and, via
 DRF's `@api_view`, CSRF-exempt for anonymous requests. It only saves history when
-a user is logged in — which the extension never is.
+a user is logged in — which the extension never is. That is enforced in
+`src/lib/axios.ts`: the extension build (`--mode extension`) sets
+`withCredentials: false`. Without it, Chrome would attach the site's session
+cookie (the host is in `host_permissions`), DRF would treat a user logged into
+the site as authenticated and enforce CSRF, and the popup — which cannot read the
+site's `csrftoken` — would get a 403.
 
 We deliberately use **no content script** (we only need the URL, not the page's
 DOM) and **no background service worker** (all work happens while the popup is

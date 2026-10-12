@@ -7,11 +7,14 @@ import axios from "axios";
  *
  * - `baseURL`: `VITE_API_URL` in dev (points at the Django server), `/api` in
  *   production where the SPA is served same-origin by Django.
- * - `withCredentials`: the Django session cookie authenticates the user.
+ * - `withCredentials`: the Django session cookie authenticates the user. Off in
+ *   the extension build (`--mode extension`): the popup is anonymous by design
+ *   and cannot read the site's `csrftoken`, so sending the session cookie of a
+ *   user logged into the site would make DRF enforce CSRF and return 403.
  */
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api",
-  withCredentials: true,
+  withCredentials: import.meta.env.MODE !== "extension",
 });
 
 /** Read a cookie value by name from `document.cookie`. */
