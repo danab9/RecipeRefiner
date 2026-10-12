@@ -85,8 +85,9 @@ fetch recipes.
 - **Auth is server-derived.** `useMe` re-derives the user from `GET /api/me/`; the Django session
   cookie is the source of truth and nothing is persisted client-side. `isPending` gates
   "not known yet" vs "not logged in". Invalidate `['me']`/`['history']` on login/logout.
-- **Every request sends credentials + CSRF.** `withCredentials: true` and the `X-CSRFToken` header
-  (read from the `csrftoken` cookie) — configured once in `src/lib/axios.ts`.
+- **Every web-app request sends credentials + CSRF.** `withCredentials: true` and the `X-CSRFToken`
+  header (read from the `csrftoken` cookie) — configured once in `src/lib/axios.ts`. The extension
+  build sends neither (`VITE_SEND_CREDENTIALS=false` in `.env.extension`); the popup is anonymous.
 - **Never commit or push directly to `main`.** Work on a feature branch. Automated CI/CD on `main`
   is the only exception.
 - **Use the `@` alias** for `src`-rooted imports (`@/hooks/useMe`), per `vite.config.ts`.

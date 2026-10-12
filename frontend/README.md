@@ -63,7 +63,7 @@ npm install            # once (pulls @types/chrome)
 npm run build:extension
 ```
 
-The build reads `.env.extension` (`VITE_API_URL`) via `--mode extension` and emits `extension/dist/`.
+The build reads `.env.extension` (`VITE_API_URL`, `VITE_SEND_CREDENTIALS`) via `--mode extension` and emits `extension/dist/`.
 That folder **is** the unpacked extension.
 
 ### Load into Chrome

@@ -71,7 +71,7 @@ Frontend commands (`npm run dev` / `build` / `lint` / `typecheck` / `test`) are 
 **One origin.** No separate frontend server in production. Vite builds the SPA into `frontend/dist`; Django serves `index.html` via a catch-all `re_path` in `reciperefiner/urls.py` (excluding `api/`, `admin/`, `static/`), and WhiteNoise serves built assets under `/static/`. That is why `frontend/vite.config.ts` sets `base: "/static/"` for builds only.
 
 **Auth is Django session cookies + CSRF, not tokens.** DRF is configured with `SessionAuthentication` only (`settings.py` `REST_FRAMEWORK`). Consequences:
-- Every frontend request needs `withCredentials: true` and an `X-CSRFToken` header — centralised in `frontend/src/lib/axios.ts`.
+- Every web-app request needs `withCredentials: true` and an `X-CSRFToken` header — centralised in `frontend/src/lib/axios.ts`. The Chrome extension build is the exception: `VITE_SEND_CREDENTIALS=false` in `frontend/.env.extension` turns both off, so the popup is always anonymous.
 - The SPA route is wrapped in `ensure_csrf_cookie`, so loading the page sets the `csrftoken` cookie the frontend reads.
 - `CSRF_TRUSTED_ORIGINS` must name the deployed hostname or every authenticated POST 403s.
 - The frontend never trusts client storage for auth; the session cookie is the source of truth and `GET /api/me/` resolves auth state.
@@ -118,7 +118,11 @@ here rather than expanding this file.
 
 Backend vars read in `reciperefiner/settings.py`: `SECRET_KEY`, `DEBUG`, `DJANGO_ALLOWED_HOSTS`, `DATABASE_URL` (Neon Postgres; omit for SQLite), `ALLOWED_ORIGINS`, `CORS_ALLOW_CREDENTIALS`, `CSRF_TRUSTED_ORIGINS`. Frontend: `VITE_API_URL` (`frontend/.env.development`); unset → `/api`. There is no `.env.example`. Never hardcode secrets.
 
-Two-stage Dockerfile: node builds the SPA, python runtime copies `dist/` in and runs `collectstatic`. Container start runs `manage.py migrate` then gunicorn. Deploys are Render-driven: `develop` auto-deploys to dev, `main` to prod. Branching and commit conventions live in [`.claude/rules/git-workflow.md`](.claude/rules/git-workflow.md); work is tracked on GitHub Project board #1.
+Two-stage Dockerfile: node builds the SPA, python runtime copies `dist/` in and runs `collectstatic`. Container start runs `manage.py migrate` then gunicorn. Deploys are Render-driven: `develop` auto-deploys to dev, `main` to prod.
+
+Prod is kept awake by an external pinger — see "Hosting" in `README.md`. Do not add one for dev.
+
+Branching and commit conventions live in [`.claude/rules/git-workflow.md`](.claude/rules/git-workflow.md); work is tracked on GitHub Project board #1.
 
 ## Before changing anything
 

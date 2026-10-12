@@ -96,6 +96,10 @@ followed for any new call:
 - **CSRF:** an axios request interceptor reads the `csrftoken` cookie and sends it as the
   `X-CSRFToken` header on **every** request. Django sets that cookie when the SPA is first served
   (`ensure_csrf_cookie`).
+- **Extension exception:** the Chrome extension build sets `VITE_SEND_CREDENTIALS=false`
+  (`.env.extension`), which turns off both credentials and the CSRF header. The popup is anonymous
+  by design, so it can only call endpoints that need no auth (today, `POST /api/`). See
+  `extension/README.md`.
 
 **Endpoints:** the endpoint list (paths, auth, request/response shapes) lives once in the repo-root
 [`../CLAUDE.md`](../CLAUDE.md) under "API" — read it there rather than restating it here, so there is
@@ -166,6 +170,7 @@ npm run test:watch # vitest (watch mode)
 1. Add a typed function in `src/api/` (this is the **only** place `axios` is imported/called).
 2. It automatically gets `withCredentials` + the `X-CSRFToken` header from the shared axios instance
    in `src/lib/axios.ts` — do not build a second axios instance (see [API contract](#api-contract)).
+   In the extension build it gets neither, so an authenticated call will fail there.
 3. Wrap it in a TanStack Query hook in `src/hooks/`: `useQuery` for reads, `useMutation` for writes.
    Invalidate the affected query keys on success (e.g. a delete invalidates `['history']`).
 4. Type the request payload and the response shape; reuse existing types (`Recipe`, `LoginPayload`,
