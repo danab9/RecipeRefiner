@@ -6,13 +6,14 @@ export default function PrivacyPolicy() {
         <h1 className="text-3xl font-semibold tracking-tight text-content">
           Privacy Policy
         </h1>
-        <p className="text-sm text-muted">Last updated: 2026-10-09</p>
+        <p className="text-sm text-muted">Last updated: 2026-10-12</p>
       </header>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold text-content">Summary</h2>
         <p className="text-muted">
-          Recipe Refiner does not sell or share your personal data, and uses no analytics,
+          Recipe Refiner does not sell your personal data, shares it only with the hosting
+          providers that run the service, and uses no analytics,
           advertising, or tracking of any kind. The browser extension needs no account: it
           sends the web address (URL) of the tab you are viewing to our server only when you
           click one of its buttons. If you create an account on the website, we store the
@@ -53,17 +54,20 @@ export default function PrivacyPolicy() {
         <h2 className="text-xl font-semibold text-content">The website</h2>
         <p className="text-muted">
           You can use the website without an account. In that case the recipe URL you submit
-          is used only to fetch and return the cleaned recipe, and is not saved.
+          is used only to fetch and return the cleaned recipe, and is not saved to our
+          database. Our hosting provider's request logs may still record it (see
+          Third-party services below).
         </p>
         <p className="text-muted">If you register, we store:</p>
         <ul className="flex list-disc flex-col gap-1 pl-5 text-muted">
           <li>your username;</li>
           <li>your password, stored only as a secure one-way hash, never in plain text;</li>
           <li>your email address, if you choose to give one;</li>
+          <li>when you created your account and when you last logged in;</li>
           <li>
             your last 20 refined recipes: the recipe URL, title, ingredients, and
-            instructions, including any edits you make. Older recipes are deleted
-            automatically.
+            instructions, including any edits you make, and when each was saved. Older
+            recipes are deleted automatically.
           </li>
         </ul>
         <p className="text-muted">
@@ -91,7 +95,9 @@ export default function PrivacyPolicy() {
         <ul className="flex list-disc flex-col gap-1 pl-5 text-muted">
           <li>
             <strong className="text-content">Render</strong> hosts our server. Like any web
-            host, it may keep standard request logs, such as IP addresses.
+            host, it may keep standard request logs, such as IP addresses and the web
+            addresses requested. When you use "Open in new page", that address includes the
+            recipe URL.
           </li>
           <li>
             <strong className="text-content">Neon</strong> hosts our database, where account
@@ -107,7 +113,10 @@ export default function PrivacyPolicy() {
       <section className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold text-content">What we do not do</h2>
         <ul className="flex list-disc flex-col gap-1 pl-5 text-muted">
-          <li>We do not sell or share your data with third parties.</li>
+          <li>
+            We do not sell your data, and we do not share it with anyone other than the
+            service providers listed above.
+          </li>
           <li>We do not use advertising networks, analytics, or cross-site tracking.</li>
           <li>We do not collect financial, health, or location data.</li>
           <li>We do not use your data to determine creditworthiness or for lending.</li>
