@@ -74,7 +74,7 @@ Frontend commands (`npm run dev` / `build` / `lint` / `typecheck` / `test`) are 
 **One origin.** No separate frontend server in production. Vite builds the SPA into `frontend/dist`; Django serves `index.html` via a catch-all `re_path` in `reciperefiner/urls.py` (excluding `api/`, `admin/`, `static/`), and WhiteNoise serves built assets under `/static/`. That is why `frontend/vite.config.ts` sets `base: "/static/"` for builds only.
 
 **Auth is Django session cookies + CSRF, not tokens.** DRF is configured with `SessionAuthentication` only (`settings.py` `REST_FRAMEWORK`). Consequences:
-- Every web-app request needs `withCredentials: true` and an `X-CSRFToken` header — centralised in `frontend/src/lib/axios.ts`. The Chrome extension build is the exception: `VITE_SEND_CREDENTIALS=false` in `frontend/.env.extension` turns both off, so the popup is always anonymous.
+- Every web-app request needs `withCredentials: true` and an `X-CSRFToken` header — centralised in `frontend/src/lib/axios.ts`. The browser extension build is the exception: `VITE_SEND_CREDENTIALS=false` in `frontend/.env.extension` turns both off, so the popup is always anonymous.
 - The SPA route is wrapped in `ensure_csrf_cookie`, so loading the page sets the `csrftoken` cookie the frontend reads.
 - `CSRF_TRUSTED_ORIGINS` must name the deployed hostname or every authenticated POST 403s.
 - The frontend never trusts client storage for auth; the session cookie is the source of truth and `GET /api/me/` resolves auth state.
