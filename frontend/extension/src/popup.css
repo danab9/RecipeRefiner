@@ -16,6 +16,17 @@ body {
 }
 
 /*
+ * Firefox for Android shows the popup as a full-screen overlay, so a fixed width
+ * overflows the phone. This keys off the pointer, not the width, because desktop
+ * popups can start with a small viewport and a width query could match by mistake.
+ */
+@media (hover: none) and (pointer: coarse) {
+  body {
+    width: auto;
+  }
+}
+
+/*
  * Moderate popup-only "zoom". The popup is its own document, so raising the
  * root font size scales every rem-based Tailwind utility (fonts, padding, gaps)
  * here and nowhere else. Default is 16px.
@@ -29,8 +40,8 @@ html {
  * and alignment. Scoped under `.recipe-popup` and anchored to stable *semantic*
  * structure (ul/li/button, h2, h3+p) rather than Tailwind class names, so they
  * don't couple to those components' exact classes. `:has()` is safe: the popup
- * only runs in modern Chrome (105+). These rules win over Tailwind because this
- * file is imported after index.css.
+ * only runs in modern browsers (Chrome 105+, Firefox 140+). These rules win over
+ * Tailwind because this file is imported after index.css.
  */
 
 /* Ingredients: align each checkbox to the first line of text, not the vertical

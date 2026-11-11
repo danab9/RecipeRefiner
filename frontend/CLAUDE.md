@@ -96,7 +96,7 @@ followed for any new call:
 - **CSRF:** an axios request interceptor reads the `csrftoken` cookie and sends it as the
   `X-CSRFToken` header on **every** request. Django sets that cookie when the SPA is first served
   (`ensure_csrf_cookie`).
-- **Extension exception:** the Chrome extension build sets `VITE_SEND_CREDENTIALS=false`
+- **Extension exception:** the browser extension build sets `VITE_SEND_CREDENTIALS=false`
   (`.env.extension`), which turns off both credentials and the CSRF header. The popup is anonymous
   by design, so it can only call endpoints that need no auth (today, `POST /api/`). See
   `extension/README.md`.
@@ -185,7 +185,7 @@ Routes are defined with **TanStack Router** (real SPA history, no hash) under `s
 
 The **index route (`/`) accepts a `?url=` search param** (typed via `validateSearch`). When present,
 `Home` passes it to `UrlForm` as `initialUrl`, which pre-fills the input and auto-refines once on
-load. This is what the Chrome extension's "Open in new page" button targets, and it also makes any
+load. This is what the browser extension's "Open in new page" button targets, and it also makes any
 `/?url=<recipe>` link shareable. The URL is still validated by `urlSchema` before the scrape.
 
 ### Forms (React Hook Form + Zod)

@@ -1,4 +1,4 @@
-/** The Privacy Policy page. Doubles as the policy URL for the Chrome Web Store listing. */
+/** The Privacy Policy page. Doubles as the policy URL for the Chrome Web Store and Firefox Add-ons listings. */
 export default function PrivacyPolicy() {
   return (
     <article className="mx-auto flex max-w-3xl flex-col gap-6">
@@ -6,7 +6,7 @@ export default function PrivacyPolicy() {
         <h1 className="text-3xl font-semibold tracking-tight text-content">
           Privacy Policy
         </h1>
-        <p className="text-sm text-muted">Last updated: 2026-10-12</p>
+        <p className="text-sm text-muted">Last updated: 2026-10-30</p>
       </header>
 
       <section className="flex flex-col gap-2">
@@ -24,6 +24,10 @@ export default function PrivacyPolicy() {
 
       <section className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold text-content">The browser extension</h2>
+        <p className="text-muted">
+          The extension is available for Chrome and Firefox, including Firefox for Android.
+          It works the same way in each.
+        </p>
         <p className="text-muted">
           When you open the extension, it uses the{' '}
           <code className="text-content">activeTab</code> permission to read the URL of the
@@ -47,6 +51,11 @@ export default function PrivacyPolicy() {
         </ul>
         <p className="text-muted">
           The extension sets no cookies and stores nothing on your device.
+        </p>
+        <p className="text-muted">
+          When you install the extension, Firefox lists "browsing activity" as data it
+          shares. This means only the URL described above, sent only when you click one of
+          those buttons. The extension does not collect your browsing history.
         </p>
       </section>
 

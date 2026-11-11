@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Recipe Refiner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Refine the recipe on the page you're viewing into a clean, ad-free view.",
   "action": {
     "default_popup": "index.html",
@@ -13,5 +13,13 @@
     "16": "icons/icon-16.png",
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "recipe-refiner@reciperefiner.onrender.com",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": { "required": ["browsingActivity"] }
+    },
+    "gecko_android": { "strict_min_version": "142.0" }
   }
 }

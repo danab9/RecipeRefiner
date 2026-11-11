@@ -5,14 +5,15 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 
 /**
- * Vite build for the Chrome (Manifest V3) extension popup.
+ * Vite build for the Manifest V3 extension popup (Chrome and Firefox).
  *
  * It is a second build target of this same package, not a separate app: the
  * "@" alias points back into ../src so the popup reuses the app's components,
  * hooks, axios instance, and Tailwind tokens with no duplication.
  *
  * Build it with:  npm run build:extension
- * Output goes to  extension/dist/  — the folder you "Load unpacked" in Chrome.
+ * Output goes to  extension/dist/  — the folder you "Load unpacked" in Chrome,
+ * and the one that holds the manifest.json you load in Firefox.
  */
 export default defineConfig({
   // The extension is its own mini-site rooted here (its own index.html).
