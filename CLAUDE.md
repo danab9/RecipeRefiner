@@ -123,7 +123,11 @@ Backend vars read in `reciperefiner/settings.py`: `SECRET_KEY`, `DEBUG`, `DJANGO
 
 Two-stage Dockerfile: node builds the SPA, python runtime copies `dist/` in and runs `collectstatic`. Container start runs `manage.py migrate` then gunicorn. Deploys are Render-driven: `develop` auto-deploys to dev, `main` to prod.
 
-Prod is kept awake by an external pinger — see "Hosting" in `README.md`. Do not add one for dev.
+Render's free plan puts a service to sleep after 15 minutes without traffic. To keep prod awake, a
+[cron-job.org](https://cron-job.org) job pings https://reciperefiner.onrender.com/ every 10 minutes.
+It pings `/` because that returns 200 without touching the database. Only prod is pinged: free
+instance hours are shared across the workspace, and keeping dev awake too would use them up before
+the month ends. Do not add a pinger for dev.
 
 Branching and commit conventions live in [`.claude/rules/git-workflow.md`](.claude/rules/git-workflow.md); work is tracked on GitHub Project board #1.
 
